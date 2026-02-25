@@ -8,6 +8,7 @@ const connection = await mysql.createPool({
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'elysia_db',
+  connectionLimit: 20,
   ssl: {
     rejectUnauthorized: true,
     minVersion: 'TLSv1.2',
