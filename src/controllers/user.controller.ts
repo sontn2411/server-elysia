@@ -33,6 +33,31 @@ export const UserController = {
       },
     }
   },
+  googleLogin: async ({ body, accessJwt, refreshJwt }: any) => {
+    const { token } = body
+    const user = await userService.googleLogin(token)
+
+    const accessToken = await accessJwt.sign({
+      sub: user.userId,
+      username: user.username,
+    })
+
+    const refreshToken = await refreshJwt.sign({
+      sub: user.userId,
+    })
+
+    await userService.updateRefreshToken(user.userId, refreshToken)
+
+    return {
+      message: 'Google login successful',
+      accessToken,
+      refreshToken,
+      user: {
+        username: user.username,
+        email: user.email,
+      },
+    }
+  },
   refresh: async ({ body: { refreshToken }, refreshJwt, accessJwt }: any) => {
     const payload = await refreshJwt.verify(refreshToken)
 

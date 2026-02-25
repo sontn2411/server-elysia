@@ -51,6 +51,11 @@ export const userRoute = new Elysia({ prefix: '/users' })
       password: t.String({ minLength: 6, maxLength: 100 }),
     }),
   })
+  .post('/google-login', UserController.googleLogin, {
+    body: t.Object({
+      token: t.String(),
+    }),
+  })
   .post('/refresh', UserController.refresh, {
     body: t.Object({
       refreshToken: t.String(),

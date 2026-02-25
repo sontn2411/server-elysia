@@ -2,10 +2,98 @@ import { eq, or } from 'drizzle-orm'
 import { db } from '../configs/db'
 import { users } from '../models/user.model'
 import { ConflictError, BadRequestError } from '../utils/errors'
+import { OAuth2Client } from 'google-auth-library'
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 export class UserService {
   async getAllUsers() {
     return await db.select().from(users)
+  }
+
+  async googleLogin(idToken: string) {
+    if (!idToken) {
+      throw new BadRequestError('ID Token is required')
+    }
+
+    try {
+      const ticket = await googleClient.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      })
+      const payload = ticket.getPayload()
+
+      if (!payload || !payload.email) {
+        throw new BadRequestError('Invalid Google Token payload')
+      }
+
+      const { email, name } = payload
+
+      // Check if user exists
+      const existingUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email))
+
+      if (existingUser.length > 0) {
+        // User exists, login
+        return {
+          userId: existingUser[0].userId,
+          username: existingUser[0].username,
+          email: existingUser[0].email,
+        }
+      }
+
+      // User does not exist, auto-register
+      let baseUsername =
+        name?.replace(/\s+/g, '').toLowerCase() || email.split('@')[0]
+      let uniqueUsername = baseUsername
+      let isUnique = false
+      let suffix = 0
+
+      while (!isUnique) {
+        const usernameCheck = await db
+          .select()
+          .from(users)
+          .where(eq(users.username, uniqueUsername))
+        if (usernameCheck.length === 0) {
+          isUnique = true
+        } else {
+          suffix++
+          uniqueUsername = `${baseUsername}_${suffix}`
+        }
+      }
+
+      const randomPassword = crypto.randomUUID() + crypto.randomUUID()
+      const hashedPassword = await Bun.password.hash(randomPassword, {
+        algorithm: 'argon2id',
+        memoryCost: 4,
+        timeCost: 3,
+      })
+
+      const newUser = {
+        userId: crypto.randomUUID(),
+        username: uniqueUsername,
+        email,
+        password: hashedPassword,
+      }
+
+      await db.insert(users).values(newUser)
+
+      return {
+        userId: newUser.userId,
+        username: newUser.username,
+        email: newUser.email,
+      }
+    } catch (error) {
+      console.error('Google verification error:', error)
+      throw {
+        _isAppError: true,
+        status: 401,
+        code: 'UNAUTHORIZED',
+        message: 'Invalid Google token',
+      }
+    }
   }
 
   async register(data: any) {
