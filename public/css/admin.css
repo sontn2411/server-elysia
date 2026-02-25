@@ -1,11 +1,18 @@
 /*
   Admin Specific Styles
 */
-body {
-  font-family: 'Inter', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+:root {
+  --primary-neon: #0ea5e9; /* Sky 500 */
+  --primary-glow: rgba(14, 165, 233, 0.4);
 }
 
-/* Add custom animations or overrides for Tailwind here */
+body {
+  font-family: 'Exo', sans-serif;
+}
+
+/* Custom fade animation */
 .fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }
@@ -16,5 +23,88 @@ body {
   }
   to {
     opacity: 1;
+  }
+}
+
+/* 
+ * Tech/Cyberpunk UI Components
+ */
+
+/* Neon Glow Input */
+.neon-input {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid #334155;
+  transition: all 0.3s ease;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.neon-input:focus {
+  border-color: var(--primary-neon);
+  box-shadow:
+    0 0 10px var(--primary-glow),
+    inset 0 0 5px var(--primary-glow);
+  outline: none;
+}
+
+/* Cyber Button */
+.cyber-btn {
+  background: transparent;
+  border: 1px solid var(--primary-neon);
+  color: var(--primary-neon);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.cyber-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--primary-neon);
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.cyber-btn:hover {
+  color: #020617; /* Slate 950 */
+  box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.cyber-btn:hover::before {
+  transform: scaleX(1);
+}
+
+/* Cyber Grid Background */
+.cyber-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center bottom;
+  z-index: -1;
+  transform: perspective(500px) rotateX(60deg) scale(2);
+  transform-origin: center bottom;
+  animation: bg-scroll 3s linear infinite;
+}
+
+@keyframes bg-scroll {
+  from {
+    transform: perspective(500px) rotateX(60deg) scale(2) translateY(0);
+  }
+  to {
+    transform: perspective(500px) rotateX(60deg) scale(2) translateY(40px);
   }
 }
