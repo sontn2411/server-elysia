@@ -1,0 +1,20 @@
+/*
+  Admin Specific Styles
+*/
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Add custom animations or overrides for Tailwind here */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

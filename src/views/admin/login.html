@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/public/css/admin.css">
+  <script src="/public/js/admin.js" defer></script>
+</head>
+
+<body class="bg-slate-50 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-extrabold text-slate-800">Admin Portal</h2>
+      <p class="text-slate-500 mt-2 text-sm">Sign in with an administrator account.</p>
+    </div>
+    {{errorMsg}}
+    <form action="/login" method="POST" class="space-y-6">
+      <div>
+        <label class="block text-slate-700 text-sm font-semibold mb-2" for="identity">
+          Username or Email
+        </label>
+        <input
+          class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+          id="identity" name="identity" type="text" placeholder="admin@example.com" required>
+      </div>
+      <div>
+        <label class="block text-slate-700 text-sm font-semibold mb-2" for="password">
+          Password
+        </label>
+        <input
+          class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+          id="password" name="password" type="password" placeholder="••••••••" required>
+      </div>
+      <button
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-200"
+        type="submit">
+        Access Dashboard
+      </button>
+    </form>
+  </div>
+</body>
+
+</html>

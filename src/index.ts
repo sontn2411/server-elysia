@@ -4,7 +4,12 @@ import { swagger } from '@elysiajs/swagger'
 import { routes } from './routes'
 import { AppError } from './utils/errors'
 
+import { staticPlugin } from '@elysiajs/static'
+
+import { adminRoute } from './routes/admin.route'
+
 const app = new Elysia()
+  .use(staticPlugin())
   .use(cors())
   .use(swagger())
   .error({
@@ -70,7 +75,7 @@ const app = new Elysia()
       },
     }
   })
-  .get('/', () => 'Hello Elysia')
+  .use(adminRoute)
   .use(routes)
   .listen(3000)
 

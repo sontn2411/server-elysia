@@ -37,6 +37,14 @@ export class UserService {
 
       if (existingUser.length > 0) {
         // User exists, login
+        if (existingUser[0].status === 'LOCKED') {
+          throw {
+            _isAppError: true,
+            status: 403,
+            code: 'FORBIDDEN',
+            message: 'Your account has been locked',
+          }
+        }
         return {
           userId: existingUser[0].userId,
           username: existingUser[0].username,
@@ -76,6 +84,7 @@ export class UserService {
         username: uniqueUsername,
         email,
         password: hashedPassword,
+        status: 'ACTIVE' as const,
       }
 
       await db.insert(users).values(newUser)
@@ -125,6 +134,7 @@ export class UserService {
       username,
       email,
       password: hashedPassword,
+      status: 'ACTIVE' as const,
     }
 
     await db.insert(users).values(newUser)
@@ -156,6 +166,15 @@ export class UserService {
         status: 401,
         code: 'UNAUTHORIZED',
         message: 'Invalid username/email or password',
+      }
+    }
+
+    if (user[0].status === 'LOCKED') {
+      throw {
+        _isAppError: true,
+        status: 403,
+        code: 'FORBIDDEN',
+        message: 'Your account has been locked',
       }
     }
 
@@ -201,6 +220,7 @@ export class UserService {
         username: users.username,
         email: users.email,
         refreshToken: users.refreshToken,
+        isAdmin: users.isAdmin,
       })
       .from(users)
       .where(eq(users.userId, userId))

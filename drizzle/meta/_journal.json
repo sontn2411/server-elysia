@@ -8,6 +8,13 @@
       "when": 1771984077675,
       "tag": "0000_light_skin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1771991881155,
+      "tag": "0001_robust_proudstar",
+      "breakpoints": true
     }
   ]
 }
