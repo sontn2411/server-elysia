@@ -163,8 +163,8 @@ export class UserService {
     if (user.length === 0) {
       throw {
         _isAppError: true,
-        status: 401,
-        code: 'UNAUTHORIZED',
+        status: 403,
+        code: 'FORBIDDEN',
         message: 'Invalid username/email or password',
       }
     }
@@ -186,8 +186,8 @@ export class UserService {
     if (!isMatch) {
       throw {
         _isAppError: true,
-        status: 401,
-        code: 'UNAUTHORIZED',
+        status: 403,
+        code: 'FORBIDDEN',
         message: 'Invalid username/email or password',
       }
     }
