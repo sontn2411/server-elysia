@@ -1,301 +1,77 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Portal - System Access</title>
+  <title>Admin Portal - Sign In</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Using Google Fonts for Tech Vibe -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="/public/css/admin.css">
 
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Space Grotesk', 'sans-serif'],
-            exo: ['Exo', 'sans-serif'],
-            mono: ['Roboto Mono', 'monospace'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
           },
           colors: {
-            cyber: {
-              50: '#f0fdfa',
-              100: '#ccfbf1',
-              200: '#99f6e4',
-              300: '#5eead4',
-              400: '#2dd4bf',
-              500: '#0ea5e9', // using sky blue for tech vibe matching admin.css
-              600: '#0284c7',
-              700: '#0369a1',
-              800: '#075985',
-              900: '#0c4a6e',
-              950: '#082f49',
-            }
-          },
-          animation: {
-            'glow-pulse': 'glow-pulse 3s ease-in-out infinite alternate',
-            'float': 'float 6s ease-in-out infinite',
-          },
-          keyframes: {
-            'glow-pulse': {
-              '0%': { opacity: 0.3, transform: 'scale(1)' },
-              '100%': { opacity: 0.6, transform: 'scale(1.05)' },
-            },
-            'float': {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-10px)' },
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              900: '#1e3a8a',
             }
           }
         }
       }
     }
   </script>
-  <style>
-    body {
-      background-color: #020617;
-      /* slate-950 */
-      color: #e2e8f0;
-      overflow-x: hidden;
-    }
-
-    /* Dynamic Cyber Background */
-    .cyber-grid {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      background-image:
-        linear-gradient(to right, rgba(14, 165, 233, 0.07) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(14, 165, 233, 0.07) 1px, transparent 1px);
-      background-size: 50px 50px;
-      mask-image: linear-gradient(to bottom, black 40%, transparent);
-      -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent);
-      transform: perspective(500px) rotateX(40deg) scale(2) translateY(-10%);
-      transform-origin: center top;
-      animation: grid-move 15s linear infinite;
-    }
-
-    @keyframes grid-move {
-      0% {
-        background-position: 0 0;
-      }
-
-      100% {
-        background-position: 0 50px;
-      }
-    }
-
-    .cyber-glow {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 700px;
-      height: 700px;
-      background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, rgba(2, 6, 23, 0) 65%);
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    /* Glassmorphism Panel */
-    .glass-panel {
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(14, 165, 233, 0.25);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(14, 165, 233, 0.05);
-    }
-
-    /* Tech Inputs */
-    .tech-input {
-      background: rgba(2, 6, 23, 0.7);
-      border: 1px solid rgba(51, 65, 85, 0.8);
-      color: #bae6fd;
-      transition: all 0.3s ease;
-      font-family: 'Roboto Mono', monospace;
-    }
-
-    .tech-input:focus {
-      border-color: #0ea5e9;
-      box-shadow: 0 0 15px rgba(14, 165, 233, 0.4), inset 0 0 5px rgba(14, 165, 233, 0.2);
-      outline: none;
-    }
-
-    /* Cyber Button */
-    .tech-btn {
-      position: relative;
-      background: transparent;
-      border: 1px solid #0ea5e9;
-      color: #0ea5e9;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      font-weight: 600;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      z-index: 1;
-    }
-
-    .tech-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #0ea5e9;
-      z-index: -1;
-      transform: translateX(-101%) skewX(-15deg);
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .tech-btn:hover {
-      color: #020617;
-      box-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
-      border-color: #38bdf8;
-    }
-
-    .tech-btn:hover::before {
-      transform: translateX(0) skewX(0);
-      background: #38bdf8;
-    }
-
-    /* Decorative UI elements */
-    .scan-line {
-      position: absolute;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(to right, transparent, rgba(14, 165, 233, 0.8), transparent);
-      top: 0;
-      left: 0;
-      animation: scan 4s linear infinite;
-      box-shadow: 0 0 10px rgba(14, 165, 233, 0.8);
-      z-index: 10;
-      pointer-events: none;
-      border-radius: 50%;
-    }
-
-    @keyframes scan {
-      0% {
-        top: -10%;
-        opacity: 0;
-      }
-
-      10% {
-        opacity: 1;
-      }
-
-      90% {
-        opacity: 1;
-      }
-
-      100% {
-        top: 110%;
-        opacity: 0;
-      }
-    }
-
-    .corner-border {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      border-color: #0ea5e9;
-      border-style: solid;
-      opacity: 0.8;
-      transition: all 0.3s ease;
-    }
-
-    .glass-panel:hover .corner-border {
-      width: 30px;
-      height: 30px;
-      border-color: #38bdf8;
-      box-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
-    }
-
-    .tl {
-      top: -2px;
-      left: -2px;
-      border-width: 2px 0 0 2px;
-      rounded-tl: 8px;
-    }
-
-    .tr {
-      top: -2px;
-      right: -2px;
-      border-width: 2px 2px 0 0;
-      rounded-tr: 8px;
-    }
-
-    .bl {
-      bottom: -2px;
-      left: -2px;
-      border-width: 0 0 2px 2px;
-      rounded-bl: 8px;
-    }
-
-    .br {
-      bottom: -2px;
-      right: -2px;
-      border-width: 0 2px 2px 0;
-      rounded-br: 8px;
-    }
-  </style>
 </head>
 
 <body
-  class="flex items-center justify-center min-h-screen font-sans antialiased selection:bg-cyber-500 selection:text-slate-950">
+  class="flex items-center justify-center min-h-screen font-sans antialiased text-slate-800 selection:bg-primary-100 selection:text-primary-900">
 
-  <!-- Dynamic Backgrounds -->
-  <div class="cyber-grid"></div>
-  <div class="cyber-glow animate-glow-pulse"></div>
+  <!-- Ambient Animated Background -->
+  <div class="ambient-bg">
+    <div class="ambient-blob blob-1"></div>
+    <div class="ambient-blob blob-2"></div>
+  </div>
 
   <!-- Login Card container -->
-  <div class="relative w-full max-w-md p-8 sm:p-10 glass-panel rounded-2xl z-10 animate-float m-4">
-    <!-- Cyberpunk decorative corners -->
-    <div class="corner-border tl rounded-tl-xl"></div>
-    <div class="corner-border tr rounded-tr-xl"></div>
-    <div class="corner-border bl rounded-bl-xl"></div>
-    <div class="corner-border br rounded-br-xl"></div>
-    <div class="scan-line"></div>
+  <div
+    class="relative w-full max-w-[420px] p-8 sm:p-10 glass rounded-3xl z-10 fade-in m-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-white/60">
 
-    <div class="text-center mb-8 relative">
+    <div class="text-center mb-10">
       <div
-        class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-900 border border-cyber-500/40 mb-5 shadow-[0_0_25px_rgba(14,165,233,0.3)] rotate-3 hover:rotate-0 transition-transform duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-cyber-400" fill="none" viewBox="0 0 24 24"
-          stroke="currentColor">
+        class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 mb-6 text-primary-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
       </div>
-      <h2
-        class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-cyber-200 tracking-tight font-exo drop-shadow-lg">
-        ADMIN PORTAL</h2>
-      <p class="text-cyber-500/80 mt-2 text-xs font-mono tracking-widest uppercase">Secure Access Node</p>
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Welcome back</h2>
+      <p class="text-slate-500 mt-2 text-sm">Please enter your details to sign in.</p>
     </div>
 
     <!-- Error message slot -->
-    <div class="text-red-400 text-sm font-mono text-center mb-4">
-      {{errorMsg}}
-    </div>
+    {{errorMsg}}
 
-    <form action="/login" method="POST" class="space-y-6 relative z-20">
+    <form action="/login" method="POST" class="space-y-6">
 
       <!-- Identity Input -->
-      <div class="space-y-2 group">
-        <label
-          class="flex items-center text-slate-400 text-xs font-mono uppercase tracking-widest transition-colors group-focus-within:text-cyber-400"
-          for="identity">
-          <span class="text-cyber-500 mr-2 opacity-70 group-focus-within:opacity-100">></span> Identity
+      <div class="space-y-2">
+        <label class="block text-slate-700 text-sm font-semibold" for="identity">
+          Email address
         </label>
         <div class="relative">
-          <input
-            class="w-full px-4 py-3.5 rounded-lg bg-slate-900 border border-slate-700 tech-input text-sm placeholder-slate-600/70"
-            id="identity" name="identity" type="text" placeholder="admin_user_id" required autocomplete="off">
-          <div
-            class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none opacity-40 group-focus-within:opacity-100 transition-opacity">
-            <svg class="w-5 h-5 text-cyber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          <input class="w-full px-4 py-3.5 rounded-xl modern-input text-sm text-slate-800 placeholder-slate-400"
+            id="identity" name="identity" type="text" placeholder="name@company.com" required autocomplete="off">
+          <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -305,19 +81,15 @@
       </div>
 
       <!-- Password Input -->
-      <div class="space-y-2 group mt-6">
-        <label
-          class="flex items-center text-slate-400 text-xs font-mono uppercase tracking-widest transition-colors group-focus-within:text-cyber-400"
-          for="password">
-          <span class="text-cyber-500 mr-2 opacity-70 group-focus-within:opacity-100">></span> Security Key
+      <div class="space-y-2 mt-5">
+        <label class="block text-slate-700 text-sm font-semibold" for="password">
+          Password
         </label>
         <div class="relative">
-          <input
-            class="w-full px-4 py-3.5 rounded-lg bg-slate-900 border border-slate-700 tech-input text-sm placeholder-slate-600/70"
+          <input class="w-full px-4 py-3.5 rounded-xl modern-input text-sm text-slate-800 placeholder-slate-400"
             id="password" name="password" type="password" placeholder="••••••••" required>
-          <div
-            class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none opacity-40 group-focus-within:opacity-100 transition-opacity">
-            <svg class="w-5 h-5 text-cyber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
@@ -328,22 +100,13 @@
       </div>
 
       <!-- Action Button -->
-      <div class="pt-6">
-        <button
-          class="w-full tech-btn py-4 px-4 rounded-lg shadow-lg text-sm flex items-center justify-center gap-3 group"
+      <div class="pt-4">
+        <button class="w-full modern-btn py-3.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2"
           type="submit">
-          <span>Authenticate</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:translate-x-1.5 transition-transform"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
+          <span>Sign in to account</span>
         </button>
       </div>
 
-      <div class="text-center mt-6">
-        <p class="text-[10px] text-slate-500 font-mono tracking-widest uppercase opacity-40">/// Encrypted Connection
-          Active ///</p>
-      </div>
     </form>
   </div>
 </body>

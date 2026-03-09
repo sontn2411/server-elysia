@@ -8,14 +8,14 @@ export const userRoute = new Elysia({ prefix: '/users' })
     jwt({
       name: 'accessJwt',
       secret: process.env.JWT_ACCESS_SECRET || 'access-secret',
-      exp: '1d',
+      exp: '7d',
     }),
   )
   .use(
     jwt({
       name: 'refreshJwt',
       secret: process.env.JWT_REFRESH_SECRET || 'refresh-secret',
-      exp: '7d',
+      exp: '30d',
     }),
   )
   .use(

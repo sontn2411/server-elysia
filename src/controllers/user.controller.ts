@@ -73,11 +73,16 @@ export const UserController = {
     const user = await userService.getUserByRefreshToken(refreshToken)
 
     if (!user) {
+      if (payload && payload.sub) {
+        await userService.updateRefreshToken(payload.sub as string, null)
+      }
+
       throw {
         _isAppError: true,
         status: 401,
         code: 'UNAUTHORIZED',
-        message: 'Refresh token revoked or invalid',
+        message:
+          'Refresh token reused. Security breach detected. All tokens revoked.',
       }
     }
 
@@ -86,8 +91,15 @@ export const UserController = {
       username: user.username,
     })
 
+    const newRefreshToken = await refreshJwt.sign({
+      sub: user.userId,
+    })
+
+    await userService.updateRefreshToken(user.userId, newRefreshToken)
+
     return {
       accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
     }
   },
   getProfile: async ({ headers, accessJwt }: any) => {
