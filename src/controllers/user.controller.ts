@@ -17,9 +17,10 @@ export const UserController = {
       username: user.username,
     })
 
-    const refreshToken = await refreshJwt.sign({
+    const rawRefreshToken = await refreshJwt.sign({
       sub: user.userId,
     })
+    const refreshToken = Buffer.from(rawRefreshToken).toString('base64url')
 
     await userService.updateRefreshToken(user.userId, refreshToken)
 
@@ -42,9 +43,10 @@ export const UserController = {
       username: user.username,
     })
 
-    const refreshToken = await refreshJwt.sign({
+    const rawRefreshToken = await refreshJwt.sign({
       sub: user.userId,
     })
+    const refreshToken = Buffer.from(rawRefreshToken).toString('base64url')
 
     await userService.updateRefreshToken(user.userId, refreshToken)
 
@@ -59,7 +61,14 @@ export const UserController = {
     }
   },
   refresh: async ({ body: { refreshToken }, refreshJwt, accessJwt }: any) => {
-    const payload = await refreshJwt.verify(refreshToken)
+    let rawRefreshToken = refreshToken
+    try {
+      rawRefreshToken = Buffer.from(refreshToken, 'base64url').toString('utf-8')
+    } catch (e) {
+      // Will fail verification below
+    }
+
+    const payload = await refreshJwt.verify(rawRefreshToken)
 
     if (!payload) {
       throw {
@@ -91,9 +100,11 @@ export const UserController = {
       username: user.username,
     })
 
-    const newRefreshToken = await refreshJwt.sign({
+    const newRawRefreshToken = await refreshJwt.sign({
       sub: user.userId,
     })
+    const newRefreshToken =
+      Buffer.from(newRawRefreshToken).toString('base64url')
 
     await userService.updateRefreshToken(user.userId, newRefreshToken)
 
