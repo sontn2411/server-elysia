@@ -1,21 +1,27 @@
 import { Elysia } from 'elysia'
+import { html } from '@elysiajs/html'
 import { cors } from '@elysiajs/cors'
 import { swagger } from '@elysiajs/swagger'
+import { staticPlugin } from '@elysiajs/static'
 import { routes } from './routes'
 import { AppError } from './utils/errors'
-
-import { staticPlugin } from '@elysiajs/static'
-
 import { adminRoute } from './routes/admin.route'
+import { imageToolRoute } from './routes/image-tool.route'
 
 const app = new Elysia()
-  .use(staticPlugin())
-  .use(cors())
+  .use(staticPlugin({
+    prefix: '/'
+  }))
+  .use(html())
+  .use(cors({
+    exposeHeaders: ['X-Optimized-Metadata']
+  }))
   .use(swagger())
   .error({
     APP_ERROR: AppError,
   })
   .onError(({ code, error, set }) => {
+    // ... error handling remains same ...
     const err = error as any
 
     if (code === 'VALIDATION') {
@@ -77,6 +83,7 @@ const app = new Elysia()
   })
   .use(adminRoute)
   .use(routes)
+  .use(imageToolRoute)
   .listen(3000)
 
 console.log(

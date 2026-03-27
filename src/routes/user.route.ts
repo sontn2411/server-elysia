@@ -20,17 +20,20 @@ export const userRoute = new Elysia({ prefix: '/users' })
   )
   .use(
     rateLimit({
-      max: 10,
-      duration: 60000, // 10 requests per minute
-      countFailedRequest: true,
-      generator: (req) => {
-        // use IP for rate limiting
-        return (
-          req.headers.get('x-forwarded-for') ||
-          req.headers.get('cf-connecting-ip') ||
-          'global'
-        )
+      max: 1000,
+      duration: 60000, // 1000 requests per minute
+      countFailedRequest: false,
+      generator: (req, server) => {
+        // use IP for rate limiting, with localhost bypass for dev
+        const ip = server?.requestIP(req)?.address || req.headers.get('x-forwarded-for') || 'global';
+        if (ip === '127.0.0.1' || ip === '::1') return ''; // Bypass limit for localhost
+        return ip;
       },
+      skip: (req) => {
+        // Skip rate limit for the Image Tool routes to ensure large uploads/downloads aren't blocked
+        const url = new URL(req.url);
+        return url.pathname.startsWith('/image-tool');
+      }
     }),
   )
   .get('/', () => UserController.getUsers())
