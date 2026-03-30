@@ -212,6 +212,11 @@ function renderUI() {
                         <span class="toggle-pill"></span>
                         <span class="text-xs text-slate-400">Grayscale</span>
                     </label>
+                    <label class="toggle-label group">
+                        <input type="checkbox" onchange="setPerFile(${index},'removeBg',this.checked)" ${data.settings.removeBg?'checked':''} class="toggle-checkbox">
+                        <span class="toggle-pill !bg-emerald-500/10 !border-emerald-500/20"></span>
+                        <span class="text-[10px] font-black text-emerald-400 group-hover:text-emerald-300">MAGIC AI</span>
+                    </label>
                 </div>
             </div>
         </div>`;
@@ -240,7 +245,7 @@ function renderUI() {
 // ── Per-file settings ──────────────────────────────────────────
 window.setPerFile = (i, key, val) => {
     if (val === '' || val === false || val === null) delete selectedFilesData[i].settings[key];
-    else if (['flipH','flipV','grayscale','sharpen','stripExif'].includes(key)) selectedFilesData[i].settings[key] = val === true || val === 'true';
+    else if (['flipH','flipV','grayscale','sharpen','stripExif','removeBg'].includes(key)) selectedFilesData[i].settings[key] = val === true || val === 'true';
     else if (['format','resizeFit'].includes(key)) selectedFilesData[i].settings[key] = val;
     else selectedFilesData[i].settings[key] = parseFloat(val);
 };
@@ -469,11 +474,12 @@ window.closePreviewModal = function() {
 
 // ── URL Processing ─────────────────────────────────────────────
 window.processFromUrl = async function() {
-    const url     = document.getElementById('urlInput').value.trim();
-    const quality = document.getElementById('urlQuality').value;
-    const format  = document.getElementById('urlFormat').value;
-    const maxWidth= document.getElementById('urlMaxWidth').value;
-    const blur    = document.getElementById('urlBlur').value;
+    const url       = document.getElementById('urlInput').value.trim();
+    const quality   = document.getElementById('urlQuality').value;
+    const format    = document.getElementById('urlFormat').value;
+    const maxWidth  = document.getElementById('urlMaxWidth').value;
+    const blur      = document.getElementById('urlBlur').value;
+    const removeBg  = document.getElementById('urlRemoveBg').checked;
 
     if (!url) { alert('Vui lòng nhập URL.'); return; }
 
@@ -492,6 +498,7 @@ window.processFromUrl = async function() {
         if (format) fd.set('format', format);
         if (maxWidth) fd.set('maxWidth', maxWidth);
         if (blur > 0) fd.set('blur', blur);
+        if (removeBg) fd.set('removeBg', 'true');
 
         const res = await fetch('/image-tool/from-url', { method:'POST', body: fd });
         if (!res.ok) throw new Error(await res.text());
@@ -528,6 +535,7 @@ function getGlobalSettings() {
         blur:      document.getElementById('blur').value,
         sharpen:   document.getElementById('sharpen').checked,
         stripExif: document.getElementById('stripExif').checked,
+        removeBg:  document.getElementById('removeBg').checked,
         outputPrefix: document.getElementById('outputPrefix').value,
         outputSuffix: document.getElementById('outputSuffix').value,
     };
@@ -549,6 +557,7 @@ function applyGlobalSettings(s) {
     setChk('grayscale',  s.grayscale);
     setVal('blur',       s.blur);       document.getElementById('blurValue').textContent = s.blur;
     setChk('sharpen',    s.sharpen);    setChk('stripExif',  s.stripExif);
+    setChk('removeBg',   s.removeBg);
     setVal('outputPrefix', s.outputPrefix); setVal('outputSuffix', s.outputSuffix);
     // Sync range pct CSS vars
     const q = document.getElementById('quality');

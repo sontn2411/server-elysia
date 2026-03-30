@@ -188,3 +188,41 @@ body {
     border-color: rgba(14,165,233,0.3);
     color: var(--accent);
 }
+
+/* ─── AI Feature Card ─── */
+.ai-feature-card {
+    background: rgba(15,23,42,0.6);
+    border: 1px solid rgba(16,185,129,0.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 0 16px rgba(16,185,129,0.05);
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.ai-feature-card:hover {
+    border-color: rgba(16,185,129,0.5);
+    box-shadow: 0 8px 48px rgba(16,185,129,0.15), inset 0 0 24px rgba(16,185,129,0.1);
+    transform: translateY(-2px);
+}
+.ai-feature-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(from 0deg, transparent, rgba(16,185,129,0.1), transparent 40%);
+    animation: rotate-glow 6s linear infinite;
+    pointer-events: none;
+}
+@keyframes rotate-glow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.ai-feature-card .toggle-pill {
+    background: rgba(16,185,129,0.1);
+    border-color: rgba(16,185,129,0.2);
+}
+.ai-feature-card .toggle-checkbox:checked + .toggle-pill {
+    background: rgba(16,185,129,0.3);
+    border-color: #10b981;
+}
+.ai-feature-card .toggle-checkbox:checked + .toggle-pill::after {
+    background: #10b981;
+    box-shadow: 0 0 12px rgba(16,185,129,0.8);
+}

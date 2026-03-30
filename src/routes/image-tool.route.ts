@@ -1,5 +1,7 @@
 import { Elysia } from 'elysia'
 import sharp from 'sharp'
+import { spawn } from 'child_process'
+import path from 'path'
 const AdmZip = require('adm-zip') as typeof import('adm-zip')
 
 const MAX_MB = 50
@@ -13,6 +15,7 @@ interface Opts {
   rotate: number; flipH: boolean; flipV: boolean
   blur: number; sharpen: boolean
   brightness: number; saturation: number; hue: number
+  removeBg: boolean
 }
 
 const parseBool = (v: any) => v === true || v === 'true' || v === '1'
@@ -36,6 +39,7 @@ function buildOpts(per: any, g: any): Opts {
     flipV:      parseBool(per.flipV      ?? g.flipV),
     blur:       parseNum(per.blur        || g.blur,      0),
     sharpen:    parseBool(per.sharpen    ?? g.sharpen),
+    removeBg:   parseBool(per.removeBg   ?? g.removeBg),
     brightness: (bVal + 100) / 100,   // 0→0,  0→1,  +100→2
     saturation: (sVal + 100) / 100,
     hue:        parseInt(per.hue        || g.hue        || 0),
@@ -43,7 +47,49 @@ function buildOpts(per: any, g: any): Opts {
 }
 
 async function processImage(input: Buffer | ArrayBuffer, originalFmt: string, opts: Opts): Promise<{ buffer: Buffer; ext: string }> {
-  let p = sharp(input).rotate() // auto-orient from EXIF
+  let imgSource: Buffer | ArrayBuffer = Buffer.isBuffer(input) ? input : Buffer.from(input)
+
+  if (opts.removeBg) {
+    try {
+      console.log(`[AI] Bắt đầu xóa nền (Tiến trình riêng biệt)... Kích thước file gốc: ${Buffer.byteLength(imgSource as Buffer)} bytes`)
+      const mime = originalFmt === 'jpg' ? 'image/jpeg' : `image/${originalFmt || 'png'}`
+
+      const aiResult = await new Promise<Buffer>((resolve, reject) => {
+        const workerPath = path.resolve(process.cwd(), 'src/workers/ai-bg-removal.ts')
+        const proc = spawn('bun', [workerPath, mime])
+        
+        const outChunks: Buffer[] = []
+        let errStr = ''
+
+        proc.stdout.on('data', chunk => outChunks.push(chunk))
+        proc.stderr.on('data', chunk => errStr += chunk.toString())
+        
+        proc.on('close', code => {
+          if (code === 0) resolve(Buffer.concat(outChunks))
+          else reject(new Error('AI Worker failed: ' + errStr))
+        })
+        proc.on('error', err => reject(err))
+
+        proc.stdin.write(Buffer.isBuffer(imgSource) ? imgSource : Buffer.from(imgSource))
+        proc.stdin.end()
+      })
+      
+      console.log(`[AI] Xóa nền an toàn thành công. Kích thước file kết quả: ${aiResult.byteLength} bytes`)
+      
+      if (aiResult.byteLength < 8) throw new Error("Empty or very short buffer returned")
+      
+      const isPNG = aiResult[0] === 0x89 && aiResult[1] === 0x50 && aiResult[2] === 0x4e && aiResult[3] === 0x47
+      if (!isPNG) {
+        throw new Error("Dữ liệu trả về không phải định dạng PNG hợp lệ")
+      }
+      
+      imgSource = aiResult
+    } catch (e) {
+      console.error('[AI] Lỗi khi xóa nền:', e)
+    }
+  }
+
+  let p = sharp(imgSource).rotate() // auto-orient from EXIF
 
   if (opts.rotate)  p = p.rotate(opts.rotate)
   if (opts.flipH)   p = p.flop()
