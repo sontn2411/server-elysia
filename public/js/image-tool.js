@@ -472,6 +472,9 @@ window.closePreviewModal = function() {
     document.getElementById('previewModal').classList.add('hidden');
 };
 
+// ── Photopea Integration (Gỗ bỏ do yêu cầu độc lập) ────────────
+// window.openPhotopea = ... (đã xóa)
+
 // ── URL Processing ─────────────────────────────────────────────
 window.processFromUrl = async function() {
     const url       = document.getElementById('urlInput').value.trim();

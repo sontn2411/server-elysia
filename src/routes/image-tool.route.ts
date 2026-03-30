@@ -128,6 +128,7 @@ async function processImage(input: Buffer | ArrayBuffer, originalFmt: string, op
 
 export const imageToolRoute = new Elysia()
   .get('/image-tool', () => Bun.file('src/views/image-tool.html'))
+  .get('/photopea',   () => Bun.file('src/views/photopea.html'))
 
   // ── Process from URL ─────────────────────────────────────────
   .post('/image-tool/from-url', async ({ body, set }) => {
