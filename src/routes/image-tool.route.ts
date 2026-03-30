@@ -83,9 +83,11 @@ async function processImage(input: Buffer | ArrayBuffer, originalFmt: string, op
         throw new Error("Dữ liệu trả về không phải định dạng PNG hợp lệ")
       }
       
-      imgSource = aiResult
+      // Separate Mode: Return immediately after background removal, skipping compression/sharp
+      return { buffer: Buffer.from(aiResult), ext: 'png' }
     } catch (e) {
       console.error('[AI] Lỗi khi xóa nền:', e)
+      // Fallback to normal processing if AI fails, or handle as needed
     }
   }
 

@@ -4,33 +4,35 @@ let dragSrcIndex = -1;
 const MAX_MB = 50, MAX_FILES = 50;
 
 // ── DOM Refs ───────────────────────────────────────────────────
-const dropZone         = document.getElementById('dropZone');
-const fileInput        = document.getElementById('fileInput');
-const fileList         = document.getElementById('fileList');
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileList = document.getElementById('fileList');
 const previewContainer = document.getElementById('previewContainer');
-const fileCountTxt     = document.getElementById('fileCount');
-const qualitySlider    = document.getElementById('quality');
-const processBtn       = document.getElementById('processBtn');
-const btnText          = document.getElementById('btnText');
-const loadingScanner   = document.getElementById('loadingScanner');
-const resultInfo       = document.getElementById('resultInfo');
-const clearAllBtn      = document.getElementById('clearAll');
-const globalLoading    = document.getElementById('globalLoading');
+const fileCountTxt = document.getElementById('fileCount');
+const qualitySlider = document.getElementById('quality');
+const processBtn = document.getElementById('processBtn');
+const btnText = document.getElementById('btnText');
+const loadingScanner = document.getElementById('loadingScanner');
+const resultInfo = document.getElementById('resultInfo');
+const clearAllBtn = document.getElementById('clearAll');
+const globalLoading = document.getElementById('globalLoading');
 const loadingProgressText = document.getElementById('loadingProgressText');
 const finalDownloadBtn = document.getElementById('finalDownloadBtn');
-const resetBtn         = document.getElementById('resetBtn');
-const imageForm        = document.getElementById('imageForm');
-const progressContainer= document.getElementById('progressContainer');
-const progressBar      = document.getElementById('progressBar');
-const progressCount    = document.getElementById('progressCount');
-const statsCard        = document.getElementById('statsCard');
+const resetBtn = document.getElementById('resetBtn');
+const imageForm = document.getElementById('imageForm');
+const progressContainer = document.getElementById('progressContainer');
+const progressBar = document.getElementById('progressBar');
+const progressCount = document.getElementById('progressCount');
+const statsCard = document.getElementById('statsCard');
+
+
 
 // ── Tabs ───────────────────────────────────────────────────────
-window.switchTab = function(tab) {
+window.switchTab = function (tab) {
     const uploadPanel = document.getElementById('imageForm');
-    const urlPanel    = document.getElementById('urlPanel');
-    const tabUpload   = document.getElementById('tabUpload');
-    const tabUrl      = document.getElementById('tabUrl');
+    const urlPanel = document.getElementById('urlPanel');
+    const tabUpload = document.getElementById('tabUpload');
+    const tabUrl = document.getElementById('tabUrl');
     if (tab === 'upload') {
         uploadPanel.classList.remove('hidden');
         urlPanel.classList.add('hidden');
@@ -44,14 +46,26 @@ window.switchTab = function(tab) {
     }
 };
 
-// ── Background color sync ──────────────────────────────────────
-const bgPicker = document.getElementById('background');
-const bgHex    = document.getElementById('backgroundHex');
-window.syncBgColor = function(input) {
-    const val = input.value;
-    if (/^#[0-9a-fA-F]{6}$/.test(val)) bgPicker.value = val;
+// ── Mode Switcher ─────────────────────────────────────────────
+window.updateModeUI = function () {
+    const mode = document.querySelector('input[name="mainMode"]:checked').value;
+    const optimizeGroup = document.getElementById('settings-group-optimize');
+    const removeBgGroup = document.getElementById('settings-group-removebg');
+
+    if (mode === 'removeBg') {
+        optimizeGroup.classList.add('hidden');
+        removeBgGroup.classList.remove('hidden');
+        // Hide per-file settings if open
+        selectedFilesData.forEach((_, i) => {
+            const el = document.getElementById('row-settings-' + i);
+            if (el) el.classList.remove('show');
+        });
+    } else {
+        optimizeGroup.classList.remove('hidden');
+        removeBgGroup.classList.add('hidden');
+    }
+    renderUI(); // Re-render to toggle settings icons visibility
 };
-bgPicker.addEventListener('input', function() { bgHex.value = this.value; });
 
 // ── Drag & Drop ────────────────────────────────────────────────
 dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add('dragover'); };
@@ -60,13 +74,13 @@ dropZone.ondrop = e => { e.preventDefault(); dropZone.classList.remove('dragover
 fileInput.onchange = e => ingestFiles(e.target.files);
 
 // ── Clipboard Paste ────────────────────────────────────────────
-document.addEventListener('paste', function(e) {
+document.addEventListener('paste', function (e) {
     const items = e.clipboardData?.items || [];
     const arr = [];
     for (const item of items) {
         if (!item.type.startsWith('image/')) continue;
         const blob = item.getAsFile();
-        if (blob) arr.push(new File([blob], `paste_${Date.now()}.${item.type.split('/')[1]||'png'}`, { type: item.type }));
+        if (blob) arr.push(new File([blob], `paste_${Date.now()}.${item.type.split('/')[1] || 'png'}`, { type: item.type }));
     }
     if (arr.length) ingestFiles(arr);
 });
@@ -117,9 +131,11 @@ function renderUI() {
 
         const isDone = data.optimizedSize != null;
         const savings = isDone ? Math.round((1 - data.optimizedSize / data.file.size) * 100) : 0;
-        const optStr  = isDone ? (data.optimizedSize >= 1048576
+        const optStr = isDone ? (data.optimizedSize >= 1048576
             ? (data.optimizedSize / 1048576).toFixed(1) + ' MB'
             : (data.optimizedSize / 1024).toFixed(1) + ' KB') : '';
+
+        const mode = document.querySelector('input[name="mainMode"]:checked')?.value || 'optimize';
 
         row.innerHTML = `
         <div class="flex items-center gap-4 relative">
@@ -134,8 +150,8 @@ function renderUI() {
                 <div class="text-xs font-bold text-white/90 truncate">${data.file.name}</div>
                 <div id="size-info-${index}" class="text-xs font-black text-slate-600 mt-0.5 italic flex items-center gap-1.5">
                     ${isDone
-                        ? `<span class="text-white/40">${sizeStr}</span><span class="text-white/20">→</span><span class="text-indigo-400">${optStr}</span><span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[9px] border border-emerald-500/10">-${savings}%</span>`
-                        : `${sizeStr} · Đã Chọn`}
+                ? `<span class="text-white/40">${sizeStr}</span><span class="text-white/20">→</span><span class="text-indigo-400">${optStr}</span><span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[9px] border border-emerald-500/10">-${savings}%</span>`
+                : `${sizeStr} · Đã Chọn`}
                 </div>
             </div>
             <div class="flex items-center gap-1.5 flex-shrink-0">
@@ -145,7 +161,8 @@ function renderUI() {
                 <button id="dl-${index}" type="button" onclick="downloadIndividual(${index})" title="Tải xuống" class="${isDone ? '' : 'hidden'} p-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-all border border-emerald-500/10">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                 </button>
-                <button type="button" onclick="toggleRowSettings(${index},this)" class="p-2.5 rounded-xl bg-indigo-500/5 hover:bg-indigo-500/10 text-indigo-400 transition-all border border-indigo-500/10">
+                <!-- Gear Icon hidden in AI Mode -->
+                <button type="button" onclick="toggleRowSettings(${index},this)" class="${mode === 'removeBg' ? 'hidden' : ''} p-2.5 rounded-xl bg-indigo-500/5 hover:bg-indigo-500/10 text-indigo-400 transition-all border border-indigo-500/10">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543-.94-3.31.826-2.37 2.37a1.724 1.724 0 00-1.065 2.572c-1.756.426-1.756 2.924 0 3.35a1.724 1.724 0 001.066 2.573c-.94 1.543.826 3.31 2.37 2.37.996.608 2.296.07 2.572-1.065z" stroke-width="2"></path></svg>
                 </button>
                 <button type="button" onclick="removeFile(${index})" class="p-2.5 rounded-xl bg-rose-500/5 hover:bg-rose-500/10 text-rose-500/60 hover:text-rose-500 transition-all border border-rose-500/10">
@@ -158,64 +175,58 @@ function renderUI() {
                 <div class="field-group">
                     <label class="field-label accent">Chất Lượng</label>
                     <input type="number" min="1" max="100" onchange="setPerFile(${index},'quality',this.value)"
-                        placeholder="Mặc định" class="pro-input" value="${data.settings.quality||''}">
+                        placeholder="Mặc định" class="pro-input" value="${data.settings.quality || ''}">
                 </div>
                 <div class="field-group">
                     <label class="field-label accent">Định Dạng</label>
                     <select onchange="setPerFile(${index},'format',this.value)" class="pro-select">
-                        <option value="" ${!data.settings.format?'selected':''}>— Mặc định —</option>
-                        <option value="jpeg" ${data.settings.format==='jpeg'?'selected':''}>JPEG</option>
-                        <option value="png"  ${data.settings.format==='png'?'selected':''}>PNG</option>
-                        <option value="webp" ${data.settings.format==='webp'?'selected':''}>WebP</option>
-                        <option value="avif" ${data.settings.format==='avif'?'selected':''}>AVIF</option>
-                        <option value="gif"  ${data.settings.format==='gif'?'selected':''}>GIF</option>
-                        <option value="tiff" ${data.settings.format==='tiff'?'selected':''}>TIFF</option>
+                        <option value="" ${!data.settings.format ? 'selected' : ''}>— Mặc định —</option>
+                        <option value="jpeg" ${data.settings.format === 'jpeg' ? 'selected' : ''}>JPEG</option>
+                        <option value="png"  ${data.settings.format === 'png' ? 'selected' : ''}>PNG</option>
+                        <option value="webp" ${data.settings.format === 'webp' ? 'selected' : ''}>WebP</option>
+                        <option value="avif" ${data.settings.format === 'avif' ? 'selected' : ''}>AVIF</option>
                     </select>
                 </div>
+                <!-- Adding more back -->
                 <div class="field-group">
                     <label class="field-label accent">Rộng Max</label>
                     <input type="number" onchange="setPerFile(${index},'maxWidth',this.value)"
-                        placeholder="Auto" class="pro-input" value="${data.settings.maxWidth||''}">
+                        placeholder="Auto" class="pro-input" value="${data.settings.maxWidth || ''}">
                 </div>
                 <div class="field-group">
                     <label class="field-label accent">Cao Max</label>
                     <input type="number" onchange="setPerFile(${index},'maxHeight',this.value)"
-                        placeholder="Auto" class="pro-input" value="${data.settings.maxHeight||''}">
+                        placeholder="Auto" class="pro-input" value="${data.settings.maxHeight || ''}">
                 </div>
                 <div class="field-group">
                     <label class="field-label accent">Xoay</label>
                     <select onchange="setPerFile(${index},'rotate',this.value)" class="pro-select">
                         <option value="0">— Không —</option>
-                        <option value="90" ${data.settings.rotate===90?'selected':''}>90° CW</option>
-                        <option value="180" ${data.settings.rotate===180?'selected':''}>180°</option>
-                        <option value="270" ${data.settings.rotate===270?'selected':''}>270° CW</option>
+                        <option value="90" ${data.settings.rotate === 90 ? 'selected' : ''}>90° CW</option>
+                        <option value="180" ${data.settings.rotate === 180 ? 'selected' : ''}>180°</option>
+                        <option value="270" ${data.settings.rotate === 270 ? 'selected' : ''}>270° CW</option>
                     </select>
                 </div>
                 <div class="field-group">
                     <label class="field-label accent">Blur (0-20)</label>
                     <input type="number" min="0" max="20" step="0.5" onchange="setPerFile(${index},'blur',this.value)"
-                        placeholder="0" class="pro-input" value="${data.settings.blur||''}">
+                        placeholder="0" class="pro-input" value="${data.settings.blur || ''}">
                 </div>
                 <div class="field-group col-span-2 flex gap-4 items-end pb-1">
                     <label class="toggle-label">
-                        <input type="checkbox" onchange="setPerFile(${index},'flipH',this.checked)" ${data.settings.flipH?'checked':''} class="toggle-checkbox">
+                        <input type="checkbox" onchange="setPerFile(${index},'flipH',this.checked)" ${data.settings.flipH ? 'checked' : ''} class="toggle-checkbox">
                         <span class="toggle-pill"></span>
                         <span class="text-xs text-slate-400">Lật Ngang</span>
                     </label>
                     <label class="toggle-label">
-                        <input type="checkbox" onchange="setPerFile(${index},'flipV',this.checked)" ${data.settings.flipV?'checked':''} class="toggle-checkbox">
+                        <input type="checkbox" onchange="setPerFile(${index},'flipV',this.checked)" ${data.settings.flipV ? 'checked' : ''} class="toggle-checkbox">
                         <span class="toggle-pill"></span>
                         <span class="text-xs text-slate-400">Lật Dọc</span>
                     </label>
                     <label class="toggle-label">
-                        <input type="checkbox" onchange="setPerFile(${index},'grayscale',this.checked)" ${data.settings.grayscale?'checked':''} class="toggle-checkbox">
+                        <input type="checkbox" onchange="setPerFile(${index},'grayscale',this.checked)" ${data.settings.grayscale ? 'checked' : ''} class="toggle-checkbox">
                         <span class="toggle-pill"></span>
                         <span class="text-xs text-slate-400">Grayscale</span>
-                    </label>
-                    <label class="toggle-label group">
-                        <input type="checkbox" onchange="setPerFile(${index},'removeBg',this.checked)" ${data.settings.removeBg?'checked':''} class="toggle-checkbox">
-                        <span class="toggle-pill !bg-emerald-500/10 !border-emerald-500/20"></span>
-                        <span class="text-[10px] font-black text-emerald-400 group-hover:text-emerald-300">MAGIC AI</span>
                     </label>
                 </div>
             </div>
@@ -245,8 +256,8 @@ function renderUI() {
 // ── Per-file settings ──────────────────────────────────────────
 window.setPerFile = (i, key, val) => {
     if (val === '' || val === false || val === null) delete selectedFilesData[i].settings[key];
-    else if (['flipH','flipV','grayscale','sharpen','stripExif','removeBg'].includes(key)) selectedFilesData[i].settings[key] = val === true || val === 'true';
-    else if (['format','resizeFit'].includes(key)) selectedFilesData[i].settings[key] = val;
+    else if (['flipH', 'flipV', 'grayscale', 'sharpen', 'stripExif', 'removeBg'].includes(key)) selectedFilesData[i].settings[key] = val === true || val === 'true';
+    else if (['format', 'resizeFit'].includes(key)) selectedFilesData[i].settings[key] = val;
     else selectedFilesData[i].settings[key] = parseFloat(val);
 };
 window.toggleRowSettings = (i, btn) => {
@@ -261,16 +272,27 @@ function buildFormData(filesArr) {
     fd.delete('files');
     for (const d of filesArr) fd.append('files', d.file);
 
+    const mode = document.querySelector('input[name="mainMode"]:checked').value;
     const perFileSettings = [];
-    filesArr.forEach((d, j) => {
-        if (Object.keys(d.settings).length) perFileSettings.push({ index: j, ...d.settings });
-    });
+
+    if (mode === 'removeBg') {
+        fd.set('removeBg', 'true');
+        fd.delete('quality');
+        fd.delete('format');
+    } else {
+        // Optimization Mode: Enforce NO background removal
+        fd.set('removeBg', 'false');
+        filesArr.forEach((d, j) => {
+            if (Object.keys(d.settings).length) perFileSettings.push({ index: j, ...d.settings });
+        });
+    }
+
     fd.set('individualSettings', JSON.stringify(perFileSettings));
     return fd;
 }
 
 // ── Sequential processing (per-file with progress) ─────────────
-imageForm.onsubmit = async function(e) {
+imageForm.onsubmit = async function (e) {
     e.preventDefault();
     if (!selectedFilesData.length) { alert('Hàng đợi trống.'); return; }
 
@@ -290,21 +312,21 @@ imageForm.onsubmit = async function(e) {
 
     // Process one file at a time
     let allBlobs = [];
-    let allMeta  = [];
+    let allMeta = [];
     for (let i = 0; i < selectedFilesData.length; i++) {
         const pct = Math.round((i / selectedFilesData.length) * 100);
         progressBar.style.width = pct + '%';
         progressCount.textContent = `${i}/${selectedFilesData.length}`;
-        loadingProgressText.textContent = `File ${i+1}/${selectedFilesData.length}: ${selectedFilesData[i].file.name}`;
+        loadingProgressText.textContent = `File ${i + 1}/${selectedFilesData.length}: ${selectedFilesData[i].file.name}`;
 
         try {
             const fd = buildFormData([selectedFilesData[i]]);
-            const res = await fetch('/image-tool', { method:'POST', body: fd });
+            const res = await fetch('/image-tool', { method: 'POST', body: fd });
             if (!res.ok) throw new Error(await res.text());
 
             const metaStr = res.headers.get('X-Optimized-Metadata');
             let metaArr = [];
-            try { metaArr = JSON.parse(metaStr || '[]'); } catch {}
+            try { metaArr = JSON.parse(metaStr || '[]'); } catch { }
 
             const blob = await res.blob();
             allBlobs.push(blob);
@@ -317,15 +339,15 @@ imageForm.onsubmit = async function(e) {
             const sizeInfo = document.getElementById('size-info-' + i);
             if (sizeInfo && metaArr[0]) {
                 const orig = selectedFilesData[i].file.size;
-                const opt  = metaArr[0].size;
-                const sav  = Math.round((1 - opt/orig)*100);
-                const fmt  = v => v >= 1048576 ? (v/1048576).toFixed(1)+' MB' : (v/1024).toFixed(1)+' KB';
+                const opt = metaArr[0].size;
+                const sav = Math.round((1 - opt / orig) * 100);
+                const fmt = v => v >= 1048576 ? (v / 1048576).toFixed(1) + ' MB' : (v / 1024).toFixed(1) + ' KB';
                 sizeInfo.className = 'text-xs font-black mt-0.5 italic flex items-center gap-1.5';
                 sizeInfo.innerHTML = `<span class="text-white/40">${fmt(orig)}</span><span class="text-white/20">→</span><span class="text-indigo-400">${fmt(opt)}</span><span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[9px] border border-emerald-500/10">-${sav}%</span>`;
             }
             const st = document.getElementById('status-' + i);
             if (st) st.classList.remove('hidden');
-        } catch(err) {
+        } catch (err) {
             console.error('Error processing file', i, err);
         }
     }
@@ -344,13 +366,13 @@ imageForm.onsubmit = async function(e) {
         // Ask server to zip all at once
         try {
             const fd = buildFormData(selectedFilesData);
-            const res = await fetch('/image-tool', { method:'POST', body: fd });
+            const res = await fetch('/image-tool', { method: 'POST', body: fd });
             if (res.ok) {
                 const zipBlob = await res.blob();
                 finalBlobUrl = URL.createObjectURL(zipBlob);
                 finalFileName = 'ket_qua_toi_uu.zip';
             }
-        } catch {}
+        } catch { }
     }
 
     // Show individual download buttons
@@ -385,19 +407,19 @@ function updateStats() {
     if (!processed.length) return;
 
     const totalOrig = processed.reduce((s, d) => s + d.file.size, 0);
-    const totalOpt  = processed.reduce((s, d) => s + d.optimizedSize, 0);
-    const savings   = Math.round((1 - totalOpt / totalOrig) * 100);
-    const fmt = v => v >= 1048576 ? (v/1048576).toFixed(1)+' MB' : (v/1024).toFixed(0)+' KB';
+    const totalOpt = processed.reduce((s, d) => s + d.optimizedSize, 0);
+    const savings = Math.round((1 - totalOpt / totalOrig) * 100);
+    const fmt = v => v >= 1048576 ? (v / 1048576).toFixed(1) + ' MB' : (v / 1024).toFixed(0) + ' KB';
 
-    document.getElementById('statsFiles').textContent    = processed.length;
-    document.getElementById('statsSavings').textContent  = savings + '%';
+    document.getElementById('statsFiles').textContent = processed.length;
+    document.getElementById('statsSavings').textContent = savings + '%';
     document.getElementById('statsOriginal').textContent = fmt(totalOrig);
     document.getElementById('statsOptimized').textContent = fmt(totalOpt);
     statsCard.classList.remove('hidden');
 }
 
 // ── Individual Download ────────────────────────────────────────
-window.downloadIndividual = async function(i) {
+window.downloadIndividual = async function (i) {
     const data = selectedFilesData[i];
     if (!data) return;
 
@@ -415,46 +437,46 @@ window.downloadIndividual = async function(i) {
     showGlobalLoading(true, 'Đang xử lý...');
     try {
         const fd = buildFormData([data]);
-        const res = await fetch('/image-tool', { method:'POST', body: fd });
+        const res = await fetch('/image-tool', { method: 'POST', body: fd });
         if (!res.ok) throw new Error(await res.text());
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url; a.download = `toi_uu_${data.file.name}`; a.click();
         setTimeout(() => URL.revokeObjectURL(url), 5000);
-    } catch(err) { alert(err.message); }
+    } catch (err) { alert(err.message); }
     finally { showGlobalLoading(false); }
 };
 
 // ── Preview Modal ──────────────────────────────────────────────
-window.showPreviewModal = async function(i) {
+window.showPreviewModal = async function (i) {
     const data = selectedFilesData[i];
     if (!data) return;
 
-    const modal       = document.getElementById('previewModal');
-    const origImg     = document.getElementById('previewOriginal');
-    const optImg      = document.getElementById('previewOptimized');
-    const origInfo    = document.getElementById('previewOriginalInfo');
-    const optInfo     = document.getElementById('previewOptimizedInfo');
-    const savingsBar  = document.getElementById('previewSavingsBar');
-    const savingsBadge= document.getElementById('previewSavingsBadge');
+    const modal = document.getElementById('previewModal');
+    const origImg = document.getElementById('previewOriginal');
+    const optImg = document.getElementById('previewOptimized');
+    const origInfo = document.getElementById('previewOriginalInfo');
+    const optInfo = document.getElementById('previewOptimizedInfo');
+    const savingsBar = document.getElementById('previewSavingsBar');
+    const savingsBadge = document.getElementById('previewSavingsBadge');
 
     origImg.src = data.thumbnail || '';
-    optImg.src  = '';
-    const fmt = v => v >= 1048576 ? (v/1048576).toFixed(1)+' MB' : (v/1024).toFixed(1)+' KB';
+    optImg.src = '';
+    const fmt = v => v >= 1048576 ? (v / 1048576).toFixed(1) + ' MB' : (v / 1024).toFixed(1) + ' KB';
     origInfo.textContent = `${fmt(data.file.size)} · Gốc`;
-    optInfo.textContent  = 'Đang xử lý...';
+    optInfo.textContent = 'Đang xử lý...';
     savingsBar.classList.add('hidden');
     modal.classList.remove('hidden');
 
     // Fetch processed preview
     try {
         const fd = buildFormData([data]);
-        const res = await fetch('/image-tool', { method:'POST', body: fd });
+        const res = await fetch('/image-tool', { method: 'POST', body: fd });
         if (!res.ok) throw new Error(await res.text());
         const metaStr = res.headers.get('X-Optimized-Metadata');
         let meta = [];
-        try { meta = JSON.parse(metaStr || '[]'); } catch {}
+        try { meta = JSON.parse(metaStr || '[]'); } catch { }
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         optImg.src = url;
@@ -465,10 +487,10 @@ window.showPreviewModal = async function(i) {
             savingsBar.classList.remove('hidden');
         }
         setTimeout(() => URL.revokeObjectURL(url), 60000);
-    } catch(err) { optInfo.textContent = 'Lỗi: ' + err.message; }
+    } catch (err) { optInfo.textContent = 'Lỗi: ' + err.message; }
 };
 
-window.closePreviewModal = function() {
+window.closePreviewModal = function () {
     document.getElementById('previewModal').classList.add('hidden');
 };
 
@@ -476,19 +498,19 @@ window.closePreviewModal = function() {
 // window.openPhotopea = ... (đã xóa)
 
 // ── URL Processing ─────────────────────────────────────────────
-window.processFromUrl = async function() {
-    const url       = document.getElementById('urlInput').value.trim();
-    const quality   = document.getElementById('urlQuality').value;
-    const format    = document.getElementById('urlFormat').value;
-    const maxWidth  = document.getElementById('urlMaxWidth').value;
-    const blur      = document.getElementById('urlBlur').value;
-    const removeBg  = document.getElementById('urlRemoveBg').checked;
+window.processFromUrl = async function () {
+    const url = document.getElementById('urlInput').value.trim();
+    const quality = document.getElementById('urlQuality').value;
+    const format = document.getElementById('urlFormat').value;
+    const maxWidth = document.getElementById('urlMaxWidth').value;
+    const blur = document.getElementById('urlBlur').value;
+    const removeBg = document.getElementById('urlRemoveBg').checked;
 
     if (!url) { alert('Vui lòng nhập URL.'); return; }
 
-    const btn    = document.getElementById('urlProcessBtn');
-    const loading= document.getElementById('urlLoading');
-    const btext  = document.getElementById('urlBtnText');
+    const btn = document.getElementById('urlProcessBtn');
+    const loading = document.getElementById('urlLoading');
+    const btext = document.getElementById('urlBtnText');
     const result = document.getElementById('urlResult');
     const dlLink = document.getElementById('urlDownloadLink');
 
@@ -503,7 +525,7 @@ window.processFromUrl = async function() {
         if (blur > 0) fd.set('blur', blur);
         if (removeBg) fd.set('removeBg', 'true');
 
-        const res = await fetch('/image-tool/from-url', { method:'POST', body: fd });
+        const res = await fetch('/image-tool/from-url', { method: 'POST', body: fd });
         if (!res.ok) throw new Error(await res.text());
 
         const blob = await res.blob();
@@ -512,62 +534,73 @@ window.processFromUrl = async function() {
         const name = cd.match(/filename="([^"]+)"/)?.[1] || 'optimized.webp';
         dlLink.href = blobUrl; dlLink.download = name;
         const meta = JSON.parse(res.headers.get('X-Optimized-Metadata') || '[]');
-        if (meta[0]) dlLink.textContent = `⬇ ${name} (${(meta[0].size/1024).toFixed(0)} KB)`;
+        if (meta[0]) dlLink.textContent = `⬇ ${name} (${(meta[0].size / 1024).toFixed(0)} KB)`;
         result.classList.remove('hidden');
         setTimeout(() => URL.revokeObjectURL(blobUrl), 120000);
-    } catch(err) { alert('Lỗi: ' + err.message); }
+    } catch (err) { alert('Lỗi: ' + err.message); }
     finally { btn.disabled = false; loading.classList.add('hidden'); btext.textContent = 'Tải & Xử Lý'; }
 };
 
 // ── Presets ────────────────────────────────────────────────────
 function getGlobalSettings() {
+    const getVal = id => document.getElementById(id)?.value || '';
+    const getChk = id => document.getElementById(id)?.checked || false;
     return {
-        quality:   document.getElementById('quality').value,
-        format:    document.getElementById('format').value,
-        maxWidth:  document.getElementById('maxWidth').value,
-        maxHeight: document.getElementById('maxHeight').value,
-        resizeFit: document.getElementById('resizeFit').value,
-        background:document.getElementById('backgroundHex').value,
-        rotate:    document.getElementById('rotate').value,
-        flipH:     document.getElementById('flipH').checked,
-        flipV:     document.getElementById('flipV').checked,
-        brightness:document.getElementById('brightness').value,
-        saturation:document.getElementById('saturation').value,
-        hue:       document.getElementById('hue').value,
-        grayscale: document.getElementById('grayscale').checked,
-        blur:      document.getElementById('blur').value,
-        sharpen:   document.getElementById('sharpen').checked,
-        stripExif: document.getElementById('stripExif').checked,
-        removeBg:  document.getElementById('removeBg').checked,
-        outputPrefix: document.getElementById('outputPrefix').value,
-        outputSuffix: document.getElementById('outputSuffix').value,
+        quality: getVal('quality'),
+        format: getVal('format'),
+        maxWidth: getVal('maxWidth'),
+        maxHeight: getVal('maxHeight'),
+        resizeFit: getVal('resizeFit'),
+        rotate: getVal('rotate'),
+        flipH: getChk('flipH'),
+        flipV: getChk('flipV'),
+        brightness: getVal('brightness'),
+        saturation: getVal('saturation'),
+        hue: getVal('hue'),
+        grayscale: getChk('grayscale'),
+        blur: getVal('blur'),
+        sharpen: getChk('sharpen'),
+        stripExif: getChk('stripExif'),
+        outputPrefix: getVal('outputPrefix'),
+        outputSuffix: getVal('outputSuffix'),
     };
 }
 
 function applyGlobalSettings(s) {
     const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
     const setChk = (id, v) => { const el = document.getElementById(id); if (el) el.checked = !!v; };
-    setVal('quality',    s.quality);    document.getElementById('qualityValue').textContent = s.quality;
-    setVal('format',     s.format);
-    setVal('maxWidth',   s.maxWidth);    setVal('maxHeight',  s.maxHeight);
-    setVal('resizeFit',  s.resizeFit);
-    setVal('backgroundHex', s.background); setVal('background', s.background);
-    setVal('rotate',     s.rotate);
-    setChk('flipH',      s.flipH);      setChk('flipV',      s.flipV);
-    setVal('brightness', s.brightness); document.getElementById('brightnessValue').textContent = s.brightness;
-    setVal('saturation', s.saturation); document.getElementById('saturationValue').textContent = s.saturation;
-    setVal('hue',        s.hue);        document.getElementById('hueValue').textContent = s.hue;
-    setChk('grayscale',  s.grayscale);
-    setVal('blur',       s.blur);       document.getElementById('blurValue').textContent = s.blur;
-    setChk('sharpen',    s.sharpen);    setChk('stripExif',  s.stripExif);
-    setChk('removeBg',   s.removeBg);
+    const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+
+    setVal('quality', s.quality); setTxt('qualityValue', s.quality);
+    setVal('format', s.format);
+    setVal('maxWidth', s.maxWidth); setVal('maxHeight', s.maxHeight);
+    setVal('resizeFit', s.resizeFit);
+    setVal('rotate', s.rotate);
+    setChk('flipH', s.flipH); setChk('flipV', s.flipV);
+    setVal('brightness', s.brightness); setTxt('brightnessValue', s.brightness);
+    setVal('saturation', s.saturation); setTxt('saturationValue', s.saturation);
+    setVal('hue', s.hue); setTxt('hueValue', s.hue);
+    setChk('grayscale', s.grayscale);
+    setVal('blur', s.blur); setTxt('blurValue', s.blur);
+    setChk('sharpen', s.sharpen); setChk('stripExif', s.stripExif);
     setVal('outputPrefix', s.outputPrefix); setVal('outputSuffix', s.outputSuffix);
-    // Sync range pct CSS vars
-    const q = document.getElementById('quality');
-    q.style.setProperty('--range-pct', q.value + '%');
+
+    // Sync CSS vars for ranges
+    ['quality', 'brightness', 'saturation', 'hue', 'blur'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            let pct = 0;
+            const val = parseFloat(el.value);
+            if (id === 'quality') pct = val;
+            else if (id === 'blur') pct = (val / 20) * 100;
+            else if (id === 'hue') pct = ((val + 180) / 360) * 100;
+            else pct = ((val + 100) / 2);
+            el.style.setProperty('--range-pct', pct + '%');
+        }
+    });
 }
 
-window.savePreset = function() {
+window.savePreset = function () {
     const name = document.getElementById('presetName').value.trim();
     if (!name) { alert('Nhập tên preset.'); return; }
     const presets = JSON.parse(localStorage.getItem('img-tool-presets') || '{}');
@@ -593,11 +626,11 @@ function renderPresets() {
     });
 }
 
-window.loadPreset = function(name) {
+window.loadPreset = function (name) {
     const presets = JSON.parse(localStorage.getItem('img-tool-presets') || '{}');
     if (presets[name]) applyGlobalSettings(presets[name]);
 };
-window.deletePreset = function(name) {
+window.deletePreset = function (name) {
     const presets = JSON.parse(localStorage.getItem('img-tool-presets') || '{}');
     delete presets[name];
     localStorage.setItem('img-tool-presets', JSON.stringify(presets));
@@ -605,14 +638,14 @@ window.deletePreset = function(name) {
 };
 
 // ── Loading ────────────────────────────────────────────────────
-function showGlobalLoading(show, text='Đang xử lý...') {
+function showGlobalLoading(show, text = 'Đang xử lý...') {
     globalLoading.classList.toggle('hidden', !show);
     loadingProgressText.textContent = text;
 }
 
 function setLoading(on) {
     processBtn.disabled = on;
-    btnText.textContent  = on ? 'Đang Xử Lý...' : 'Bắt Đầu Xử Lý';
+    btnText.textContent = on ? 'Đang Xử Lý...' : 'Bắt Đầu Xử Lý';
     loadingScanner.classList.toggle('hidden', !on);
     processBtn.classList.toggle('opacity-70', !on);
     showGlobalLoading(on);
@@ -634,3 +667,4 @@ if (resetBtn) resetBtn.onclick = clearSession;
 
 // ── Init ───────────────────────────────────────────────────────
 renderPresets();
+updateModeUI();
