@@ -9,6 +9,74 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/image-tool.css">
+    <style>
+        /* Toast Notification Styles */
+        #toast-container {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            min-width: 300px;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            animation: toast-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: all 0.3s ease;
+        }
+        .toast.hiding {
+            animation: toast-slide-out 0.3s ease forwards;
+        }
+        .toast-icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
+        .toast-msg { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.025em; line-height: 1.4; }
+        
+        .toast-success { border-left: 4px solid #10b981; }
+        .toast-success .toast-icon { color: #10b981; }
+        .toast-error { border-left: 4px solid #ef4444; }
+        .toast-error .toast-icon { color: #ef4444; }
+        .toast-warning { border-left: 4px solid #f59e0b; }
+        .toast-warning .toast-icon { color: #f59e0b; }
+        .toast-info { border-left: 4px solid #3b82f6; }
+        .toast-info .toast-icon { color: #3b82f6; }
+
+        @keyframes toast-slide-in {
+            from { transform: translateX(110%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes toast-slide-out {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(110%); opacity: 0; }
+        }
+
+        /* Sticky Sidebar & Enhancements */
+        @media (min-width: 1024px) {
+            .lg\:col-span-1 > .glass {
+                position: sticky;
+                top: 2rem;
+            }
+        }
+        
+        /* Drop Zone Pulse */
+        .drop-zone.dragging {
+            border-color: #6366f1 !important;
+            background: rgba(99, 102, 241, 0.05) !important;
+            transform: scale(1.01);
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);
+        }
+    </style>
 </head>
 <body class="min-h-screen flex flex-col items-center px-4 py-8 md:px-8">
 
@@ -322,20 +390,6 @@
                 </div>
             </details>
 
-            <!-- Đầu Ra -->
-            <details class="accordion mb-2">
-                <summary class="accordion-header">📝 Tên File Đầu Ra</summary>
-                <div class="accordion-body space-y-3">
-                    <div class="field-group">
-                        <label class="field-label accent">Thêm trước (Prefix)</label>
-                        <input type="text" name="outputPrefix" id="outputPrefix" placeholder="vd: opt_" class="pro-input">
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label accent">Thêm sau (Suffix)</label>
-                        <input type="text" name="outputSuffix" id="outputSuffix" placeholder="vd: _min" class="pro-input">
-                    </div>
-                </div>
-            </details>
             <!-- Cài đặt sẵn (Presets) -->
             <div class="pt-4 border-t border-white/5 space-y-4">
                 <h3 class="text-[9px] font-black uppercase tracking-widest text-slate-600">Cài đặt sẵn (Presets)</h3>
@@ -449,9 +503,9 @@
 </form>
 
 <footer class="mt-24 py-10 text-slate-700 text-[9px] font-black uppercase tracking-[0.3em] border-t border-slate-800/50 w-full max-w-6xl text-center">
-    &copy; 2026 Image Logic Systems &bull; Doanh Nghiệp & Tin Cậy
-</footer>
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
 
-<script src="/js/image-tool.js"></script>
+    <script src="/js/image-tool.js"></script>
 </body>
 </html>

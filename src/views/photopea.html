@@ -69,6 +69,55 @@
             border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Toast Notification Styles */
+        #toast-container {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            min-width: 300px;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            animation: toast-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: all 0.3s ease;
+        }
+        .toast.hiding { animation: toast-slide-out 0.3s ease forwards; }
+        .toast-icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
+        .toast-msg { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.025em; line-height: 1.4; }
+        
+        .toast-success { border-left: 4px solid #10b981; }
+        .toast-success .toast-icon { color: #10b981; }
+        .toast-error { border-left: 4px solid #ef4444; }
+        .toast-error .toast-icon { color: #ef4444; }
+        .toast-warning { border-left: 4px solid #f59e0b; }
+        .toast-warning .toast-icon { color: #f59e0b; }
+        .toast-info { border-left: 4px solid #3b82f6; }
+        .toast-info .toast-icon { color: #3b82f6; }
+
+        @keyframes toast-slide-in {
+            from { transform: translateX(110%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes toast-slide-out {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(110%); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -118,6 +167,9 @@
         
         <iframe id="photopea-iframe" allow="clipboard-read; clipboard-write" class="invisible"></iframe>
     </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
 
     <script src="/js/photopea-handler.js"></script>
 </body>

@@ -1,3 +1,32 @@
+// ── Toast Logic ────────────────────────────────────────────────
+window.showToast = function (message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+
+    let icon = '';
+    if (type === 'success') icon = '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+    else if (type === 'error') icon = '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+    else if (type === 'warning') icon = '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+    else icon = '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+
+    toast.innerHTML = `${icon}<span class="toast-msg">${message}</span>`;
+    container.appendChild(toast);
+
+    const timer = setTimeout(() => {
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+
+    toast.onclick = () => {
+        clearTimeout(timer);
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 300);
+    };
+};
+
 // ── State ──────────────────────────────────────────────────────
 let selectedFilesData = []; // { file, settings, thumbnail, optimizedSize }
 let dragSrcIndex = -1;
@@ -91,11 +120,11 @@ function ingestFiles(files) {
     let skipped = 0;
     for (const file of arr) {
         if (!file.type.startsWith('image/')) continue;
-        if (selectedFilesData.length >= MAX_FILES) { alert(`Tối đa ${MAX_FILES} file.`); break; }
+        if (selectedFilesData.length >= MAX_FILES) { showToast(`Tối đa ${MAX_FILES} file.`, 'warning'); break; }
         if (file.size > MAX_MB * 1024 * 1024) { skipped++; continue; }
         selectedFilesData.push({ file, settings: {}, thumbnail: null, optimizedSize: null });
     }
-    if (skipped) alert(`${skipped} file bị bỏ qua (>${MAX_MB}MB).`);
+    if (skipped) showToast(`${skipped} file bị bỏ qua (>${MAX_MB}MB).`, 'error');
     renderUI();
 }
 
@@ -294,7 +323,7 @@ function buildFormData(filesArr) {
 // ── Sequential processing (per-file with progress) ─────────────
 imageForm.onsubmit = async function (e) {
     e.preventDefault();
-    if (!selectedFilesData.length) { alert('Hàng đợi trống.'); return; }
+    if (!selectedFilesData.length) { showToast('Hàng đợi trống.', 'warning'); return; }
 
     setLoading(true);
     resultInfo.classList.add('hidden');
@@ -444,7 +473,7 @@ window.downloadIndividual = async function (i) {
         const a = document.createElement('a');
         a.href = url; a.download = `toi_uu_${data.file.name}`; a.click();
         setTimeout(() => URL.revokeObjectURL(url), 5000);
-    } catch (err) { alert(err.message); }
+    } catch (err) { showToast(err.message, 'error'); }
     finally { showGlobalLoading(false); }
 };
 
@@ -506,7 +535,7 @@ window.processFromUrl = async function () {
     const blur = document.getElementById('urlBlur').value;
     const removeBg = document.getElementById('urlRemoveBg').checked;
 
-    if (!url) { alert('Vui lòng nhập URL.'); return; }
+    if (!url) { showToast('Vui lòng nhập URL.', 'warning'); return; }
 
     const btn = document.getElementById('urlProcessBtn');
     const loading = document.getElementById('urlLoading');
@@ -537,7 +566,7 @@ window.processFromUrl = async function () {
         if (meta[0]) dlLink.textContent = `⬇ ${name} (${(meta[0].size / 1024).toFixed(0)} KB)`;
         result.classList.remove('hidden');
         setTimeout(() => URL.revokeObjectURL(blobUrl), 120000);
-    } catch (err) { alert('Lỗi: ' + err.message); }
+    } catch (err) { showToast('Lỗi: ' + err.message, 'error'); }
     finally { btn.disabled = false; loading.classList.add('hidden'); btext.textContent = 'Tải & Xử Lý'; }
 };
 
@@ -561,8 +590,6 @@ function getGlobalSettings() {
         blur: getVal('blur'),
         sharpen: getChk('sharpen'),
         stripExif: getChk('stripExif'),
-        outputPrefix: getVal('outputPrefix'),
-        outputSuffix: getVal('outputSuffix'),
     };
 }
 
@@ -583,7 +610,6 @@ function applyGlobalSettings(s) {
     setChk('grayscale', s.grayscale);
     setVal('blur', s.blur); setTxt('blurValue', s.blur);
     setChk('sharpen', s.sharpen); setChk('stripExif', s.stripExif);
-    setVal('outputPrefix', s.outputPrefix); setVal('outputSuffix', s.outputSuffix);
 
     // Sync CSS vars for ranges
     ['quality', 'brightness', 'saturation', 'hue', 'blur'].forEach(id => {
@@ -602,7 +628,7 @@ function applyGlobalSettings(s) {
 
 window.savePreset = function () {
     const name = document.getElementById('presetName').value.trim();
-    if (!name) { alert('Nhập tên preset.'); return; }
+    if (!name) { showToast('Nhập tên preset.', 'warning'); return; }
     const presets = JSON.parse(localStorage.getItem('img-tool-presets') || '{}');
     presets[name] = getGlobalSettings();
     localStorage.setItem('img-tool-presets', JSON.stringify(presets));

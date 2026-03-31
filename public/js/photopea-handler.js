@@ -8,6 +8,35 @@
     let currentFile = null;
     let isPPReady = false;
 
+    // ── Toast Logic ────────────────────────────────────────────
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+
+        let icon = '';
+        if (type === 'success') icon = '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+        else if (type === 'error') icon = '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+        else if (type === 'warning') icon = '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+        else icon = '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+
+        toast.innerHTML = `${icon}<span class="toast-msg">${message}</span>`;
+        container.appendChild(toast);
+
+        const timer = setTimeout(() => {
+            toast.classList.add('hiding');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+
+        toast.onclick = () => {
+            clearTimeout(timer);
+            toast.classList.add('hiding');
+            setTimeout(() => toast.remove(), 300);
+        };
+    }
+
     // ── Pre-defined Config for performance ─────────────────────
     const PP_CONFIG = {
         "environment": {
@@ -45,7 +74,7 @@
             startPhotopea();
         } catch (err) {
             console.error("Lỗi khi nạp ảnh ban đầu:", err);
-            alert("Không thể nạp ảnh từ phiên trước.");
+            showToast("Không thể nạp ảnh từ phiên trước.", "error");
         }
     }
 
@@ -80,7 +109,7 @@
             startPhotopea();
         } catch (err) {
             console.error("Lỗi khi đọc file:", err);
-            alert("Lỗi khi mở file hình ảnh này.");
+            showToast("Lỗi khi mở file hình ảnh này.", "error");
         }
     }
 
@@ -116,7 +145,7 @@
 
     window.triggerExport = function() {
         if (!isPPReady) {
-            alert('Trình sửa ảnh đang khởi tạo, vui lòng đợi giây lát!');
+            showToast('Trình sửa ảnh đang khởi tạo, vui lòng đợi giây lát!', 'warning');
             return;
         }
         // Tell Photopea to send result back as binary
