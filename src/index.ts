@@ -7,15 +7,20 @@ import { routes } from './routes'
 import { AppError } from './utils/errors'
 import { adminRoute } from './routes/admin.route'
 import { imageToolRoute } from './routes/image-tool.route'
+import { youtubeRoute } from './routes/youtube.route'
 
 const app = new Elysia()
-  .use(staticPlugin({
-    prefix: '/'
-  }))
+  .use(
+    staticPlugin({
+      prefix: '/',
+    }),
+  )
   .use(html())
-  .use(cors({
-    exposeHeaders: ['X-Optimized-Metadata']
-  }))
+  .use(
+    cors({
+      exposeHeaders: ['X-Optimized-Metadata'],
+    }),
+  )
   .use(swagger())
   .error({
     APP_ERROR: AppError,
@@ -84,6 +89,7 @@ const app = new Elysia()
   .use(adminRoute)
   .use(routes)
   .use(imageToolRoute)
+  .use(youtubeRoute)
   .listen(3000)
 
 console.log(

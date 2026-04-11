@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Downloader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .pro-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .pro-input:focus {
+            outline: none;
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .pro-input::placeholder {
+            color: rgba(148, 163, 184, 0.5);
+        }
+
+        .pro-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            transition: all 0.2s;
+        }
+
+        .pro-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .pro-btn:active {
+            transform: translateY(0);
+        }
+
+        .pro-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .pro-select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .pro-select:focus {
+            outline: none;
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .pro-select option {
+            background: #1e293b;
+            color: white;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.625rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: rgba(148, 163, 184, 0.8);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Toast Notification */
+        #toast-container {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            min-width: 300px;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            animation: toast-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: all 0.3s ease;
+        }
+
+        .toast.hiding {
+            animation: toast-out 0.3s ease forwards;
+        }
+
+        .toast-success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast-success .toast-icon {
+            color: #10b981;
+        }
+
+        .toast-error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .toast-error .toast-icon {
+            color: #ef4444;
+        }
+
+        .toast-info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast-info .toast-icon {
+            color: #3b82f6;
+        }
+
+        @keyframes toast-in {
+            from {
+                transform: translateX(110%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes toast-out {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(110%);
+                opacity: 0;
+            }
+        }
+
+        /* Loading Overlay */
+        #globalLoading {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+        }
+
+        .format-card {
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .format-card:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 999px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.5);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center px-4 py-8 md:px-8">
+
+    <!-- Loading Overlay -->
+    <div id="globalLoading" class="hidden flex-col items-center justify-center">
+        <div class="relative w-20 h-20 mb-6">
+            <div class="absolute inset-0 rounded-full border-4 border-indigo-500/20"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-t-indigo-500 animate-spin"></div>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-1" id="loadingText">Đang xử lý...</h3>
+        <div class="w-64 progress-bar mt-4">
+            <div id="loadingProgressBar" class="progress-bar-fill" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="w-full max-w-3xl mb-8 text-center mt-8">
+        <h1 class="text-4xl md:text-5xl font-black mb-2">
+            <span class="text-white">YOUTUBE</span>
+            <span class="text-red-500">DOWNLOADER</span>
+        </h1>
+        <p class="text-slate-600 text-[10px] font-black uppercase tracking-[0.25em]">
+            Dán link → Chọn định dạng → Tải về
+        </p>
+    </header>
+
+    <!-- Main Card -->
+    <div class="w-full max-w-3xl glass rounded-3xl p-8 space-y-6">
+
+        <!-- URL Input -->
+        <div class="space-y-4">
+            <div>
+                <label class="field-label">Link YouTube</label>
+                <input type="url" id="urlInput" placeholder="https://www.youtube.com/watch?v=..." class="pro-input">
+            </div>
+            <button id="fetchBtn" onclick="fetchVideoInfo()"
+                class="pro-btn w-full py-4 rounded-xl text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
+                <span id="fetchBtnText">Lấy Thông Tin Video</span>
+                <div id="fetchLoading" class="hidden">
+                    <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                </div>
+            </button>
+        </div>
+
+        <!-- Video Info Panel (Hidden by default) -->
+        <div id="videoInfoPanel" class="hidden space-y-4">
+            <div class="border-t border-white/10 pt-6">
+                <!-- Video Thumbnail & Title -->
+                <div class="flex gap-4 mb-4">
+                    <img id="videoThumbnail" class="w-40 h-24 object-cover rounded-xl bg-slate-900" src="" alt="">
+                    <div class="flex-1">
+                        <h3 id="videoTitle" class="text-white font-bold text-sm line-clamp-2 mb-2"></h3>
+                        <p id="videoAuthor" class="text-slate-400 text-xs mb-1"></p>
+                        <p id="videoDuration" class="text-indigo-400 text-[10px] font-mono uppercase tracking-widest">
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Extended Info Cards -->
+                <div id="extendedInfo" class="hidden grid grid-cols-3 gap-2 mb-4">
+                    <div class="format-card text-center py-2">
+                        <div class="text-[9px] text-slate-500 uppercase tracking-wider">Lượt xem</div>
+                        <div id="viewCount" class="text-white text-xs font-bold"></div>
+                    </div>
+                    <div class="format-card text-center py-2">
+                        <div class="text-[9px] text-slate-500 uppercase tracking-wider">Thích</div>
+                        <div id="likeCount" class="text-white text-xs font-bold"></div>
+                    </div>
+                    <div class="format-card text-center py-2">
+                        <div class="text-[9px] text-slate-500 uppercase tracking-wider">Đăng ngày</div>
+                        <div id="uploadDate" class="text-white text-xs font-bold"></div>
+                    </div>
+                    <div class="format-card text-center py-2">
+                        <div class="text-[9px] text-slate-500 uppercase tracking-wider">Độ phân giải</div>
+                        <div id="resolution" class="text-white text-xs font-bold"></div>
+                    </div>
+                    <div class="format-card text-center py-2">
+                        <div class="text-[9px] text-slate-500 uppercase tracking-wider">FPS</div>
+                        <div id="fpsCount" class="text-white text-xs font-bold"></div>
+                    </div>
+                    <div class="format-card text-center py-2">
+                        <div class="text-[9px] text-slate-500 uppercase tracking-wider">Trạng thái</div>
+                        <div id="liveStatus" class="text-white text-xs font-bold"></div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div id="descriptionBox" class="hidden mb-4">
+                    <label class="field-label">Mô tả</label>
+                    <div class="p-3 rounded-xl bg-white/5 border border-white/10 text-[11px] text-slate-300 leading-relaxed max-h-24 overflow-y-auto custom-scrollbar"
+                        id="videoDescription">
+                    </div>
+                </div>
+
+                <!-- Categories/Tags -->
+                <div id="categoriesBox" class="hidden mb-4">
+                    <label class="field-label">Thể loại</label>
+                    <div class="flex flex-wrap gap-1" id="videoCategories">
+                    </div>
+                </div>
+
+                <!-- Channel Link -->
+                <div id="channelBox" class="hidden mb-4">
+                    <a id="channelLink" href="#" target="_blank"
+                        class="inline-flex items-center gap-1 text-[11px] text-indigo-400 hover:text-indigo-300 transition-colors">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                        <span>Xem trên YouTube →</span>
+                    </a>
+                </div>
+
+                <!-- Format Selection -->
+                <div>
+                    <label class="field-label">Chọn Định Dạng</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4" id="formatSelection">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="format" value="mp4-1080" checked class="hidden peer">
+                            <div
+                                class="format-card peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 text-center">
+                                <div class="text-white text-xs font-bold">MP4 1080p</div>
+                                <div class="text-slate-500 text-[10px] mt-1">Video + Audio</div>
+                                <div class="text-indigo-400 text-[10px] mt-1 font-mono file-size"
+                                    data-format="mp4-1080"></div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="format" value="mp4-720" class="hidden peer">
+                            <div
+                                class="format-card peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 text-center">
+                                <div class="text-white text-xs font-bold">MP4 720p</div>
+                                <div class="text-slate-500 text-[10px] mt-1">Video + Audio</div>
+                                <div class="text-indigo-400 text-[10px] mt-1 font-mono file-size" data-format="mp4-720">
+                                </div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="format" value="mp4-480" class="hidden peer">
+                            <div
+                                class="format-card peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 text-center">
+                                <div class="text-white text-xs font-bold">MP4 480p</div>
+                                <div class="text-slate-500 text-[10px] mt-1">Video + Audio</div>
+                                <div class="text-indigo-400 text-[10px] mt-1 font-mono file-size" data-format="mp4-480">
+                                </div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="format" value="mp3-320" class="hidden peer">
+                            <div
+                                class="format-card peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 text-center">
+                                <div class="text-white text-xs font-bold">MP3 320kbps</div>
+                                <div class="text-slate-500 text-[10px] mt-1">Chỉ Audio</div>
+                                <div class="text-indigo-400 text-[10px] mt-1 font-mono file-size" data-format="mp3-320">
+                                </div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="format" value="mp3-128" class="hidden peer">
+                            <div
+                                class="format-card peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 text-center">
+                                <div class="text-white text-xs font-bold">MP3 128kbps</div>
+                                <div class="text-slate-500 text-[10px] mt-1">Chỉ Audio</div>
+                                <div class="text-indigo-400 text-[10px] mt-1 font-mono file-size" data-format="mp3-128">
+                                </div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="format" value="best" class="hidden peer">
+                            <div
+                                class="format-card peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 text-center">
+                                <div class="text-white text-xs font-bold">Best Quality</div>
+                                <div class="text-slate-500 text-[10px] mt-1">Tự động</div>
+                                <div class="text-indigo-400 text-[10px] mt-1 font-mono file-size" data-format="best">
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Download Button -->
+                <button id="downloadBtn" onclick="downloadVideo()"
+                    class="pro-btn w-full py-4 rounded-xl text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
+                    <span id="downloadBtnText">⬇ Tải Video</span>
+                    <div id="downloadLoading" class="hidden">
+                        <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Navigation -->
+    <div class="fixed bottom-8 right-8 z-[200] flex flex-col gap-3">
+        <a href="/image-tool" title="Image Optimizer"
+            class="w-14 h-14 rounded-2xl bg-indigo-500/10 hover:bg-indigo-500 text-indigo-400 hover:text-white border border-indigo-500/20 flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl glass group relative">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <span
+                class="absolute right-full mr-4 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Image
+                Optimizer</span>
+        </a>
+
+        <a href="/youtube" title="YouTube Downloader (Active)"
+            class="w-14 h-14 rounded-2xl bg-red-500 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl shadow-red-500/20 group relative">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+            </svg>
+            <span
+                class="absolute right-full mr-4 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">YouTube
+                (Active)</span>
+        </a>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // Format number (e.g., 1234567 → 1.2M)
+        function formatNumber(num) {
+            if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        // Format file size (bytes → MB/GB)
+        function formatFileSize(bytes) {
+            if (!bytes || bytes <= 0) return '?';
+            if (bytes >= 1073741824) return (bytes / 1073741824).toFixed(2) + ' GB';
+            if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
+            if (bytes >= 1024) return (bytes / 1024).toFixed(0) + ' KB';
+            return bytes + ' B';
+        }
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+
+            const icons = {
+                success: '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>',
+                error: '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>',
+                info: '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
+            };
+
+            toast.innerHTML = `${icons[type]}<span class="toast-msg">${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Show/hide loading
+        function showLoading(text = 'Đang xử lý...') {
+            const el = document.getElementById('globalLoading');
+            el.classList.remove('hidden');
+            el.classList.add('flex');
+            document.getElementById('loadingText').textContent = text;
+        }
+
+        function hideLoading() {
+            const el = document.getElementById('globalLoading');
+            el.classList.add('hidden');
+            el.classList.remove('flex');
+        }
+
+        function setProgress(pct) {
+            document.getElementById('loadingProgressBar').style.width = pct + '%';
+        }
+
+        // Fetch video info
+        async function fetchVideoInfo() {
+            const url = document.getElementById('urlInput').value.trim();
+
+            if (!url) {
+                showToast('Vui lòng dán link YouTube', 'error');
+                return;
+            }
+
+            // Validate YouTube URL
+            const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)/;
+            if (!ytRegex.test(url)) {
+                showToast('Link không hợp lệ. Vui lòng dán link YouTube chính xác', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('fetchBtn');
+            const btnText = document.getElementById('fetchBtnText');
+            const loading = document.getElementById('fetchLoading');
+
+            btn.disabled = true;
+            btnText.textContent = 'Đang lấy thông tin...';
+            loading.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/youtube/info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(error);
+                }
+
+                const data = await response.json();
+
+                // Update basic info
+                document.getElementById('videoThumbnail').src = data.thumbnail || '';
+                document.getElementById('videoTitle').textContent = data.title || 'Unknown';
+                document.getElementById('videoAuthor').textContent = data.author || '';
+                document.getElementById('videoDuration').textContent = data.duration || '';
+
+                // Update extended info
+                if (data.view_count) {
+                    document.getElementById('viewCount').textContent = formatNumber(data.view_count);
+                }
+                if (data.like_count) {
+                    document.getElementById('likeCount').textContent = formatNumber(data.like_count);
+                }
+                if (data.upload_date) {
+                    document.getElementById('uploadDate').textContent = data.upload_date;
+                }
+                if (data.resolution) {
+                    document.getElementById('resolution').textContent = data.resolution;
+                }
+                if (data.fps) {
+                    document.getElementById('fpsCount').textContent = `${data.fps} FPS`;
+                }
+                if (data.live_status) {
+                    const statusMap = {
+                        'is_live': '🔴 Đang LIVE',
+                        'was_live': 'Đã LIVE',
+                        'not_live': '📹 Video',
+                        'is_upcoming': '⏰ Sắp diễn ra',
+                    };
+                    document.getElementById('liveStatus').textContent = statusMap[data.live_status] || '📹 Video';
+                }
+
+                // Description
+                if (data.description) {
+                    document.getElementById('videoDescription').textContent = data.description;
+                    document.getElementById('descriptionBox').classList.remove('hidden');
+                } else {
+                    document.getElementById('descriptionBox').classList.add('hidden');
+                }
+
+                // Categories/Tags
+                if (data.categories && data.categories.length > 0) {
+                    const tagsHtml = data.categories.map(cat =>
+                        `<span class="px-2 py-1 rounded-lg bg-indigo-500/10 text-[10px] text-indigo-300 border border-indigo-500/20">${cat}</span>`
+                    ).join('');
+                    document.getElementById('videoCategories').innerHTML = tagsHtml;
+                    document.getElementById('categoriesBox').classList.remove('hidden');
+                } else {
+                    document.getElementById('categoriesBox').classList.add('hidden');
+                }
+
+                // Channel link
+                if (data.id) {
+                    document.getElementById('channelLink').href = `https://www.youtube.com/watch?v=${data.id}`;
+                    document.getElementById('channelBox').classList.remove('hidden');
+                } else {
+                    document.getElementById('channelBox').classList.add('hidden');
+                }
+
+                // Show extended info cards if any data exists
+                const hasExtendedInfo = data.view_count || data.like_count || data.upload_date || data.resolution;
+                if (hasExtendedInfo) {
+                    document.getElementById('extendedInfo').classList.remove('hidden');
+                } else {
+                    document.getElementById('extendedInfo').classList.add('hidden');
+                }
+
+                // Show video info panel
+                document.getElementById('videoInfoPanel').classList.remove('hidden');
+
+                // Update file sizes
+                if (data.file_sizes) {
+                    document.querySelectorAll('.file-size').forEach(el => {
+                        const format = el.getAttribute('data-format');
+                        const size = data.file_sizes[format];
+                        if (size) {
+                            el.textContent = formatFileSize(size);
+                        } else {
+                            el.textContent = '~ Tính toán...';
+                        }
+                    });
+                }
+
+                // Estimate MP3 sizes based on duration and bitrate
+                const durationSec = data.duration_seconds || 0;
+                if (durationSec > 0) {
+                    const mp3_320 = document.querySelector('.file-size[data-format="mp3-320"]');
+                    const mp3_128 = document.querySelector('.file-size[data-format="mp3-128"]');
+                    if (mp3_320 && !mp3_320.textContent) mp3_320.textContent = `~${formatFileSize((durationSec * 320 * 1000) / 8)}`;
+                    if (mp3_128 && !mp3_128.textContent) mp3_128.textContent = `~${formatFileSize((durationSec * 128 * 1000) / 8)}`;
+                }
+
+                // Estimate best quality size (use 1080p size or fallback)
+                const bestSize = document.querySelector('.file-size[data-format="best"]');
+                if (bestSize && !bestSize.textContent && data.file_sizes?.['mp4-1080']) {
+                    bestSize.textContent = `~${formatFileSize(data.file_sizes['mp4-1080'])}`;
+                }
+
+                showToast('Lấy thông tin video thành công!', 'success');
+
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showToast(error.message || 'Không thể lấy thông tin video', 'error');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Lấy Thông Tin Video';
+                loading.classList.add('hidden');
+            }
+        }
+
+        // Download video
+        async function downloadVideo() {
+            const url = document.getElementById('urlInput').value.trim();
+            const format = document.querySelector('input[name="format"]:checked')?.value || 'mp4-1080';
+
+            const btn = document.getElementById('downloadBtn');
+            const btnText = document.getElementById('downloadBtnText');
+            const loading = document.getElementById('downloadLoading');
+
+            btn.disabled = true;
+            btnText.textContent = 'Đang tải về...';
+            loading.classList.remove('hidden');
+
+            showLoading('Đang kết nối đến YouTube...');
+            setProgress(0);
+
+            try {
+                // Step 1: POST to process download
+                const response = await fetch('/youtube/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, format })
+                });
+
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(error);
+                }
+
+                const data = await response.json();
+
+                // Step 2: Track progress via SSE (fileId comes from SSE when completed)
+                await trackDownloadProgress(data.taskId);
+
+            } catch (error) {
+                console.error('Download error:', error);
+                showToast(error.message || 'Không thể tải video', 'error');
+                btn.disabled = false;
+                btnText.textContent = '⬇ Tải Video';
+                loading.classList.add('hidden');
+                hideLoading();
+                setProgress(0);
+            }
+        }
+
+        // Track download progress via SSE
+        function trackDownloadProgress(taskId) {
+            return new Promise((resolve, reject) => {
+                const eventSource = new EventSource(`/youtube/progress/${taskId}`);
+                const loadingText = document.getElementById('loadingText');
+                const progressBar = document.getElementById('loadingProgressBar');
+
+                eventSource.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+
+                    if (data.status === 'starting') {
+                        loadingText.textContent = 'Đang tải video từ YouTube...';
+                        progressBar.style.width = '0%';
+                    } else if (data.status === 'downloading' || data.status === 'processing') {
+                        loadingText.textContent = data.status === 'processing'
+                            ? `Đang xử lý video... ${data.eta || ''}`
+                            : `Đang tải: ${data.percent.toFixed(1)}% | Tốc độ: ${data.speed || '...'} | Còn lại: ${data.eta || '...'}`;
+                        progressBar.style.width = `${Math.min(data.percent, 100)}%`;
+                    } else if (data.status === 'completed') {
+                        loadingText.textContent = 'Hoàn thành! Đang chuẩn bị file...';
+                        progressBar.style.width = '100%';
+
+                        // Trigger actual download with fileId from SSE
+                        const fileId = data.fileId;
+                        if (fileId) {
+                            setTimeout(() => {
+                                window.location.href = `/youtube/file/${fileId}`;
+                                showToast('Video đã sẵn sàng! Đang tải về...', 'success');
+                            }, 500);
+                        }
+
+                        eventSource.close();
+                        resolve();
+
+                        // Reset UI after download starts
+                        setTimeout(() => {
+                            const btn = document.getElementById('downloadBtn');
+                            const btnText = document.getElementById('downloadBtnText');
+                            const loading = document.getElementById('downloadLoading');
+                            btn.disabled = false;
+                            btnText.textContent = '⬇ Tải Video';
+                            loading.classList.add('hidden');
+                            hideLoading();
+                            setProgress(0);
+                        }, 2000);
+                    } else if (data.status === 'error') {
+                        showToast('Lỗi khi tải video!', 'error');
+                        eventSource.close();
+                        reject(new Error('Download failed'));
+                    } else if (data.status === 'done') {
+                        eventSource.close();
+                    }
+                };
+
+                eventSource.onerror = (err) => {
+                    console.error('SSE error:', err);
+                    eventSource.close();
+                    reject(new Error('Connection lost'));
+                };
+            });
+        }
+
+        // Enter key to fetch info
+        document.getElementById('urlInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                fetchVideoInfo();
+            }
+        });
+    </script>
+</body>
+
+</html>
