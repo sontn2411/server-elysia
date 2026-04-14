@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/css/image-tool.css">
+    <script defer src='https://analytics.deplio.app/script.js' data-website-id='f427a9d0-6a4e-4cd9-82c2-b9aba05f404c'
+        data-performance='true' data-do-not-track='true' data-domains='server-elysia.onrender.com'></script>
     <style>
         /* Toast Notification Styles */
         #toast-container {
@@ -21,6 +25,7 @@
             gap: 0.75rem;
             pointer-events: none;
         }
+
         .toast {
             pointer-events: auto;
             min-width: 300px;
@@ -37,38 +42,88 @@
             animation: toast-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             transition: all 0.3s ease;
         }
+
         .toast.hiding {
             animation: toast-slide-out 0.3s ease forwards;
         }
-        .toast-icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
-        .toast-msg { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.025em; line-height: 1.4; }
-        
-        .toast-success { border-left: 4px solid #10b981; }
-        .toast-success .toast-icon { color: #10b981; }
-        .toast-error { border-left: 4px solid #ef4444; }
-        .toast-error .toast-icon { color: #ef4444; }
-        .toast-warning { border-left: 4px solid #f59e0b; }
-        .toast-warning .toast-icon { color: #f59e0b; }
-        .toast-info { border-left: 4px solid #3b82f6; }
-        .toast-info .toast-icon { color: #3b82f6; }
+
+        .toast-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .toast-msg {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            line-height: 1.4;
+        }
+
+        .toast-success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast-success .toast-icon {
+            color: #10b981;
+        }
+
+        .toast-error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .toast-error .toast-icon {
+            color: #ef4444;
+        }
+
+        .toast-warning {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .toast-warning .toast-icon {
+            color: #f59e0b;
+        }
+
+        .toast-info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast-info .toast-icon {
+            color: #3b82f6;
+        }
 
         @keyframes toast-slide-in {
-            from { transform: translateX(110%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(110%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
+
         @keyframes toast-slide-out {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(110%); opacity: 0; }
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(110%);
+                opacity: 0;
+            }
         }
 
         /* Sticky Sidebar & Enhancements */
         @media (min-width: 1024px) {
-            .lg\:col-span-1 > .glass {
+            .lg\:col-span-1>.glass {
                 position: sticky;
                 top: 2rem;
             }
         }
-        
+
         /* Drop Zone Pulse */
         .drop-zone.dragging {
             border-color: #6366f1 !important;
@@ -78,434 +133,521 @@
         }
     </style>
 </head>
+
 <body class="min-h-screen flex flex-col items-center px-4 py-8 md:px-8">
 
-<!-- Loading Overlay -->
-<div id="globalLoading" class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center">
-    <div class="relative w-20 h-20 mb-6">
-        <div class="absolute inset-0 rounded-full border-4 border-indigo-500/20"></div>
-        <div class="absolute inset-0 rounded-full border-4 border-t-indigo-500 animate-spin"></div>
-        <div class="absolute inset-0 flex items-center justify-center">
-            <svg class="w-7 h-7 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2" stroke-linecap="round"></path>
+    <!-- Loading Overlay -->
+    <div id="globalLoading"
+        class="hidden fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center">
+        <div class="relative w-20 h-20 mb-6">
+            <div class="absolute inset-0 rounded-full border-4 border-indigo-500/20"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-t-indigo-500 animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <svg class="w-7 h-7 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+            </div>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-1">Đang xử lý hình ảnh...</h3>
+        <p id="loadingProgressText" class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">Hệ thống
+            đang tối ưu hóa</p>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal"
+        class="hidden fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-4">
+        <div class="relative w-full max-w-5xl glass rounded-3xl p-6 md:p-8">
+            <button onclick="closePreviewModal()"
+                class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all flex items-center justify-center text-lg">✕</button>
+            <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-6">Trước / Sau</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-3">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-600">Gốc</p>
+                    <div
+                        class="rounded-2xl overflow-hidden bg-slate-900/50 flex items-center justify-center min-h-[200px]">
+                        <img id="previewOriginal" class="max-w-full max-h-64 object-contain" src="" alt="">
+                    </div>
+                    <p id="previewOriginalInfo" class="text-xs text-slate-500 text-center"></p>
+                </div>
+                <div class="space-y-3">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-600">Đã Tối Ưu</p>
+                    <div
+                        class="rounded-2xl overflow-hidden bg-slate-900/50 flex items-center justify-center min-h-[200px]">
+                        <img id="previewOptimized" class="max-w-full max-h-64 object-contain" src="" alt="">
+                    </div>
+                    <p id="previewOptimizedInfo" class="text-xs text-slate-500 text-center"></p>
+                </div>
+            </div>
+            <div id="previewSavingsBar" class="mt-6 text-center hidden">
+                <span id="previewSavingsBadge"
+                    class="px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 font-black text-sm border border-emerald-500/20"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="w-full max-w-6xl mb-8 text-center mt-8">
+        <h1 class="text-4xl md:text-5xl font-black mb-2">
+            <span class="text-white">PRO IMAGE</span>
+            <span class="text-indigo-400">OPTIMIZER</span>
+        </h1>
+        <p class="text-slate-600 text-[10px] font-black uppercase tracking-[0.25em]">
+            Tối đa <span class="text-indigo-400/80">50 file · 50MB/file</span> · JPEG · PNG · WebP · AVIF · GIF · TIFF
+        </p>
+        <!-- Tabs -->
+        <div class="flex justify-center gap-2 mt-6">
+            <button id="tabUpload" onclick="switchTab('upload')"
+                class="tab-btn tab-active px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                📁 Upload File
+            </button>
+            <button id="tabUrl" onclick="switchTab('url')"
+                class="tab-btn px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                🔗 Từ URL
+            </button>
+        </div>
+    </header>
+
+    <!-- Floating Navigation (Visible Always) -->
+    <div class="fixed bottom-8 right-8 z-[200] flex flex-col gap-3">
+        <!-- Photo Editor Button -->
+        <a href="/photopea" title="Photo Editor"
+            class="w-14 h-14 rounded-2xl bg-indigo-500/10 hover:bg-indigo-500 text-indigo-400 hover:text-white border border-indigo-500/20 flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl glass group relative">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-        </div>
+            <span
+                class="absolute right-full mr-4 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Photo
+                Editor</span>
+        </a>
+
+        <!-- Image Optimizer Button (Active) -->
+        <a href="/image-tool" title="Image Optimizer"
+            class="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl shadow-emerald-500/20 group relative">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    stroke-width="2"></path>
+            </svg>
+            <span
+                class="absolute right-full mr-4 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Optimizer
+                (Active)</span>
+        </a>
     </div>
-    <h3 class="text-lg font-bold text-white mb-1">Đang xử lý hình ảnh...</h3>
-    <p id="loadingProgressText" class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">Hệ thống đang tối ưu hóa</p>
-</div>
 
-<!-- Preview Modal -->
-<div id="previewModal" class="hidden fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-4">
-    <div class="relative w-full max-w-5xl glass rounded-3xl p-6 md:p-8">
-        <button onclick="closePreviewModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all flex items-center justify-center text-lg">✕</button>
-        <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-6">Trước / Sau</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-3">
-                <p class="text-[9px] font-black uppercase tracking-widest text-slate-600">Gốc</p>
-                <div class="rounded-2xl overflow-hidden bg-slate-900/50 flex items-center justify-center min-h-[200px]">
-                    <img id="previewOriginal" class="max-w-full max-h-64 object-contain" src="" alt="">
-                </div>
-                <p id="previewOriginalInfo" class="text-xs text-slate-500 text-center"></p>
-            </div>
-            <div class="space-y-3">
-                <p class="text-[9px] font-black uppercase tracking-widest text-slate-600">Đã Tối Ưu</p>
-                <div class="rounded-2xl overflow-hidden bg-slate-900/50 flex items-center justify-center min-h-[200px]">
-                    <img id="previewOptimized" class="max-w-full max-h-64 object-contain" src="" alt="">
-                </div>
-                <p id="previewOptimizedInfo" class="text-xs text-slate-500 text-center"></p>
-            </div>
-        </div>
-        <div id="previewSavingsBar" class="mt-6 text-center hidden">
-            <span id="previewSavingsBadge" class="px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 font-black text-sm border border-emerald-500/20"></span>
-        </div>
-    </div>
-</div>
-
-<!-- Header -->
-<header class="w-full max-w-6xl mb-8 text-center mt-8">
-    <h1 class="text-4xl md:text-5xl font-black mb-2">
-        <span class="text-white">PRO IMAGE</span>
-        <span class="text-indigo-400">OPTIMIZER</span>
-    </h1>
-    <p class="text-slate-600 text-[10px] font-black uppercase tracking-[0.25em]">
-        Tối đa <span class="text-indigo-400/80">50 file · 50MB/file</span> · JPEG · PNG · WebP · AVIF · GIF · TIFF
-    </p>
-    <!-- Tabs -->
-    <div class="flex justify-center gap-2 mt-6">
-        <button id="tabUpload" onclick="switchTab('upload')" class="tab-btn tab-active px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
-            📁 Upload File
-        </button>
-        <button id="tabUrl" onclick="switchTab('url')" class="tab-btn px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
-            🔗 Từ URL
-        </button>
-    </div>
-</header>
-
-<!-- Floating Navigation (Visible Always) -->
-<div class="fixed bottom-8 right-8 z-[200] flex flex-col gap-3">
-    <!-- Photo Editor Button -->
-    <a href="/photopea" title="Photo Editor" 
-       class="w-14 h-14 rounded-2xl bg-indigo-500/10 hover:bg-indigo-500 text-indigo-400 hover:text-white border border-indigo-500/20 flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl glass group relative">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-        <span class="absolute right-full mr-4 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Photo Editor</span>
-    </a>
-    
-    <!-- Image Optimizer Button (Active) -->
-    <a href="/image-tool" title="Image Optimizer" 
-       class="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl shadow-emerald-500/20 group relative">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2"></path></svg>
-        <span class="absolute right-full mr-4 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Optimizer (Active)</span>
-    </a>
-</div>
-
-<!-- URL Panel -->
-<div id="urlPanel" class="hidden w-full max-w-3xl mb-8">
-    <div class="glass rounded-3xl p-8 space-y-6">
-        <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400">Tải Ảnh Từ URL</h2>
-        <div class="field-group">
-            <label class="field-label accent">Đường dẫn URL</label>
-            <input type="url" id="urlInput" placeholder="https://example.com/image.jpg" class="pro-input">
-        </div>
-        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+    <!-- URL Panel -->
+    <div id="urlPanel" class="hidden w-full max-w-3xl mb-8">
+        <div class="glass rounded-3xl p-8 space-y-6">
+            <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400">Tải Ảnh Từ URL</h2>
             <div class="field-group">
-                <label class="field-label">Chất Lượng</label>
-                <input type="number" id="urlQuality" min="1" max="100" value="90" class="pro-input">
+                <label class="field-label accent">Đường dẫn URL</label>
+                <input type="url" id="urlInput" placeholder="https://example.com/image.jpg" class="pro-input">
             </div>
-            <div class="field-group">
-                <label class="field-label accent">Định Dạng</label>
-                <select id="urlFormat" class="pro-select">
-                    <option value="webp" selected>WebP</option>
-                    <option value="">Giữ Nguyên</option>
-                    <option value="jpeg">JPEG</option>
-                    <option value="png">PNG</option>
-                    <option value="avif">AVIF</option>
-                </select>
-            </div>
-            <div class="field-group">
-                <label class="field-label accent">Rộng Tối Đa</label>
-                <input type="number" id="urlMaxWidth" placeholder="Auto" class="pro-input">
-            </div>
-            <div class="field-group">
-                <label class="field-label accent">Blur</label>
-                <input type="number" id="urlBlur" min="0" max="10" value="0" placeholder="0" class="pro-input">
-            </div>
-            <div class="field-group">
-                <label class="field-label !text-emerald-400">✨ Xóa Nền AI</label>
-                <div class="h-[42px] flex items-center justify-start">
-                    <label class="toggle-label !gap-3">
-                        <input type="checkbox" id="urlRemoveBg" value="true" class="toggle-checkbox">
-                        <span class="toggle-pill !bg-emerald-500/10 !border-emerald-500/20"></span>
-                    </label>
-                </div>
-            </div>
-        </div>
-        <button id="urlProcessBtn" onclick="processFromUrl()" class="pro-btn w-full py-4 rounded-xl text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
-            <span id="urlBtnText">Tải & Xử Lý Magic</span>
-            <div id="urlLoading" class="hidden">
-                <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            </div>
-        </button>
-        <div id="urlResult" class="hidden p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 text-center">
-            <p class="text-emerald-400 font-black text-[10px] uppercase tracking-widest mb-3">Hoàn Tất</p>
-            <a id="urlDownloadLink" href="#" class="pro-btn inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-black text-[10px] uppercase tracking-widest">
-                ⬇ Tải Xuống
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- Main Form (Upload) -->
-<form id="imageForm" action="/image-tool" method="POST" enctype="multipart/form-data"
-    class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-4 gap-8">
-    <input type="hidden" name="individualSettings" id="individualSettingsInput">
-
-    <!-- Sidebar -->
-    <div class="lg:col-span-1 space-y-4">
-        <div class="glass rounded-3xl p-6">
-            <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-6 flex items-center gap-2">
-                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Chế Độ Xử Lý
-            </h2>
-
-            <!-- Mode Selector -->
-            <div class="grid grid-cols-2 gap-2 mb-6 p-1 bg-white/5 rounded-2xl border border-white/5">
-                <label class="cursor-pointer group">
-                    <input type="radio" name="mainMode" value="optimize" checked class="hidden peer" onchange="updateModeUI()">
-                    <div class="py-2.5 rounded-xl text-center text-[10px] font-black uppercase tracking-widest transition-all peer-checked:bg-indigo-600 peer-checked:text-white text-slate-500 hover:bg-white/5">
-                        📦 Tối Ưu
-                    </div>
-                </label>
-                <label class="cursor-pointer group">
-                    <input type="radio" name="mainMode" value="removeBg" class="hidden peer" onchange="updateModeUI()">
-                    <div class="py-2.5 rounded-xl text-center text-[10px] font-black uppercase tracking-widest transition-all peer-checked:bg-emerald-600 peer-checked:text-white text-slate-500 hover:bg-white/5">
-                        ✨ Xóa Nền
-                    </div>
-                </label>
-            </div>
-
-            <div id="settings-group-optimize" class="space-y-4">
-                <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-4 flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Cài Đặt Nén
-                </h2>
-
-            <!-- Cơ Bản (always open) -->
-            <div class="space-y-4 mb-4">
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 <div class="field-group">
-                    <div class="flex justify-between">
-                        <label class="field-label">Chất Lượng</label>
-                        <span class="text-[10px] font-black text-sky-400"><span id="qualityValue">100</span>%</span>
-                    </div>
-                    <input type="range" name="quality" id="quality" min="1" max="100" value="100" class="pro-range"
-                        oninput="qualityValue.textContent=this.value;this.style.setProperty('--range-pct',this.value+'%')" style="--range-pct:100%">
+                    <label class="field-label">Chất Lượng</label>
+                    <input type="number" id="urlQuality" min="1" max="100" value="90" class="pro-input">
                 </div>
                 <div class="field-group">
-                    <label class="field-label accent">Định Dạng Đầu Ra</label>
-                    <select name="format" id="format" class="pro-select">
-                        <option value="">— Giữ Nguyên —</option>
+                    <label class="field-label accent">Định Dạng</label>
+                    <select id="urlFormat" class="pro-select">
+                        <option value="webp" selected>WebP</option>
+                        <option value="">Giữ Nguyên</option>
                         <option value="jpeg">JPEG</option>
                         <option value="png">PNG</option>
-                        <option value="webp" selected>WebP · Khuyên dùng</option>
-                        <option value="avif">AVIF · Nén Siêu Cấp</option>
-                        <option value="gif">GIF</option>
-                        <option value="tiff">TIFF</option>
+                        <option value="avif">AVIF</option>
                     </select>
                 </div>
-            </div>
-
-            <!-- Kích Thước -->
-            <details class="accordion mb-2">
-                <summary class="accordion-header">📐 Kích Thước & Khung</summary>
-                <div class="accordion-body space-y-4">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="field-group">
-                            <label class="field-label accent">Rộng Tối Đa (px)</label>
-                            <input type="number" name="maxWidth" id="maxWidth" placeholder="Auto" class="pro-input">
-                        </div>
-                        <div class="field-group">
-                            <label class="field-label accent">Cao Tối Đa (px)</label>
-                            <input type="number" name="maxHeight" id="maxHeight" placeholder="Auto" class="pro-input">
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label accent">Kiểu Resize</label>
-                        <select name="resizeFit" id="resizeFit" class="pro-select">
-                            <option value="inside" selected>Inside · Giữ tỉ lệ</option>
-                            <option value="cover">Cover · Cắt khung</option>
-                            <option value="contain">Contain · Thêm viền</option>
-                            <option value="fill">Fill · Kéo giãn</option>
-                            <option value="outside">Outside · Mở rộng</option>
-                        </select>
-                    </div>
+                <div class="field-group">
+                    <label class="field-label accent">Rộng Tối Đa</label>
+                    <input type="number" id="urlMaxWidth" placeholder="Auto" class="pro-input">
                 </div>
-            </details>
-
-            <!-- Biến Đổi -->
-            <details class="accordion mb-2">
-                <summary class="accordion-header">🔄 Biến Đổi</summary>
-                <div class="accordion-body space-y-4">
-                    <div class="field-group">
-                        <label class="field-label accent">Xoay (độ)</label>
-                        <select name="rotate" id="rotate" class="pro-select">
-                            <option value="0" selected>— Không xoay —</option>
-                            <option value="90">90° CW</option>
-                            <option value="180">180°</option>
-                            <option value="270">270° CW</option>
-                        </select>
-                    </div>
-                    <div class="flex gap-4">
-                        <label class="toggle-label flex-1">
-                            <input type="checkbox" name="flipH" id="flipH" value="true" class="toggle-checkbox">
-                            <span class="toggle-pill"></span>
-                            <span class="text-xs text-slate-400">Lật Ngang</span>
-                        </label>
-                        <label class="toggle-label flex-1">
-                            <input type="checkbox" name="flipV" id="flipV" value="true" class="toggle-checkbox">
-                            <span class="toggle-pill"></span>
-                            <span class="text-xs text-slate-400">Lật Dọc</span>
+                <div class="field-group">
+                    <label class="field-label accent">Blur</label>
+                    <input type="number" id="urlBlur" min="0" max="10" value="0" placeholder="0" class="pro-input">
+                </div>
+                <div class="field-group">
+                    <label class="field-label !text-emerald-400">✨ Xóa Nền AI</label>
+                    <div class="h-[42px] flex items-center justify-start">
+                        <label class="toggle-label !gap-3">
+                            <input type="checkbox" id="urlRemoveBg" value="true" class="toggle-checkbox">
+                            <span class="toggle-pill !bg-emerald-500/10 !border-emerald-500/20"></span>
                         </label>
                     </div>
-                </div>
-            </details>
-
-            <!-- Màu Sắc -->
-            <details class="accordion mb-2">
-                <summary class="accordion-header">🎨 Màu Sắc</summary>
-                <div class="accordion-body space-y-4">
-                    <div class="field-group">
-                        <div class="flex justify-between">
-                            <label class="field-label">Sáng</label>
-                            <span class="text-[10px] font-black text-sky-400"><span id="brightnessValue">0</span>%</span>
-                        </div>
-                        <input type="range" name="brightness" id="brightness" min="-100" max="100" value="0" class="pro-range"
-                            oninput="brightnessValue.textContent=this.value;this.style.setProperty('--range-pct',((+this.value+100)/2)+'%')" style="--range-pct:50%">
-                    </div>
-                    <div class="field-group">
-                        <div class="flex justify-between">
-                            <label class="field-label">Bão Hoà</label>
-                            <span class="text-[10px] font-black text-sky-400"><span id="saturationValue">0</span>%</span>
-                        </div>
-                        <input type="range" name="saturation" id="saturation" min="-100" max="100" value="0" class="pro-range"
-                            oninput="saturationValue.textContent=this.value;this.style.setProperty('--range-pct',((+this.value+100)/2)+'%')" style="--range-pct:50%">
-                    </div>
-                    <div class="field-group">
-                        <div class="flex justify-between">
-                            <label class="field-label">Sắc Tố (Hue)</label>
-                            <span class="text-[10px] font-black text-sky-400"><span id="hueValue">0</span>°</span>
-                        </div>
-                        <input type="range" name="hue" id="hue" min="-180" max="180" value="0" class="pro-range"
-                            oninput="hueValue.textContent=this.value;this.style.setProperty('--range-pct',((+this.value+180)/360*100)+'%')" style="--range-pct:50%">
-                    </div>
-                    <label class="toggle-label">
-                        <input type="checkbox" name="grayscale" id="grayscale" value="true" class="toggle-checkbox">
-                        <span class="toggle-pill"></span>
-                        <span class="text-xs text-slate-400">Đen Trắng (Grayscale)</span>
-                    </label>
-                </div>
-            </details>
-
-            <!-- Hiệu Ứng -->
-            <details class="accordion mb-2">
-                <summary class="accordion-header">✨ Hiệu Ứng & Nâng Cao</summary>
-                <div class="accordion-body space-y-4">
-                    <div class="field-group">
-                        <div class="flex justify-between">
-                            <label class="field-label">Blur</label>
-                            <span class="text-[10px] font-black text-sky-400"><span id="blurValue">0</span></span>
-                        </div>
-                        <input type="range" name="blur" id="blur" min="0" max="20" value="0" step="0.5" class="pro-range"
-                            oninput="blurValue.textContent=this.value;this.style.setProperty('--range-pct',(this.value/20*100)+'%')" style="--range-pct:0%">
-                    </div>
-                    <div class="flex gap-4">
-                        <label class="toggle-label flex-1">
-                            <input type="checkbox" name="sharpen" id="sharpen" value="true" class="toggle-checkbox">
-                            <span class="toggle-pill"></span>
-                            <span class="text-xs text-slate-400">Làm Nét</span>
-                        </label>
-                        <label class="toggle-label flex-1">
-                            <input type="checkbox" name="stripExif" id="stripExif" value="true" class="toggle-checkbox">
-                            <span class="toggle-pill"></span>
-                            <span class="text-xs text-slate-400">Xóa EXIF</span>
-                        </label>
-                    </div>
-                </div>
-            </details>
-
-            <!-- Cài đặt sẵn (Presets) -->
-            <div class="pt-4 border-t border-white/5 space-y-4">
-                <h3 class="text-[9px] font-black uppercase tracking-widest text-slate-600">Cài đặt sẵn (Presets)</h3>
-                <div class="flex gap-2">
-                    <input type="text" id="presetName" placeholder="Tên preset..." class="pro-input flex-1">
-                    <button type="button" onclick="savePreset()" class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/10 hover:bg-indigo-500/20 transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round"></path></svg>
-                    </button>
-                </div>
-                <div id="presetList" class="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
-                    <!-- Presets will be rendered here -->
                 </div>
             </div>
-            </div> <!-- End of settings-group-optimize -->
-
-            <div id="settings-group-removebg" class="hidden space-y-4">
-                <div class="px-4 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                    </div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400">Chế độ Xóa Nền AI</span>
-                </div>
-            </div>
-
-            <!-- Process Button -->
-            <button type="submit" id="processBtn"
-                class="pro-btn w-full text-white font-black py-4 rounded-xl text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all">
-                <span id="btnText">Bắt Đầu Xử Lý</span>
-                <div id="loadingScanner" class="hidden">
-                    <svg class="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <button id="urlProcessBtn" onclick="processFromUrl()"
+                class="pro-btn w-full py-4 rounded-xl text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
+                <span id="urlBtnText">Tải & Xử Lý Magic</span>
+                <div id="urlLoading" class="hidden">
+                    <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
                 </div>
             </button>
-
-            <!-- Progress Bar -->
-            <div id="progressContainer" class="hidden mt-4">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-500">Tiến Trình</span>
-                    <span id="progressCount" class="text-[10px] font-black text-indigo-400">0/0</span>
-                </div>
-                <div class="h-1 bg-white/5 rounded-full overflow-hidden">
-                    <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-500 to-sky-400 rounded-full transition-all duration-500" style="width:0%"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Result Info -->
-        <div id="resultInfo" class="hidden glass rounded-3xl p-6 border-emerald-500/20 bg-emerald-500/5">
-            <span class="text-[9px] font-black uppercase tracking-widest text-emerald-400">Hoàn Tất</span>
-            <p class="text-[10px] text-emerald-300/80 my-3 italic">Đã xử lý xong. Tải xuống kết quả ngay.</p>
-            <div class="flex flex-col gap-2">
-                <a id="finalDownloadBtn" href="#"
-                    class="py-3 rounded-xl text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 transition-all">
-                    ⬇ Tải Xuống ZIP
+            <div id="urlResult"
+                class="hidden p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 text-center">
+                <p class="text-emerald-400 font-black text-[10px] uppercase tracking-widest mb-3">Hoàn Tất</p>
+                <a id="urlDownloadLink" href="#"
+                    class="pro-btn inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-black text-[10px] uppercase tracking-widest">
+                    ⬇ Tải Xuống
                 </a>
-                <button type="button" id="resetBtn"
-                    class="py-3 rounded-xl text-slate-400 hover:text-white font-black text-[10px] uppercase tracking-widest border border-white/5 hover:border-white/10 glass transition-all">
-                    Làm Mới
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Form (Upload) -->
+    <form id="imageForm" action="/image-tool" method="POST" enctype="multipart/form-data"
+        class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <input type="hidden" name="individualSettings" id="individualSettingsInput">
+
+        <!-- Sidebar -->
+        <div class="lg:col-span-1 space-y-4">
+            <div class="glass rounded-3xl p-6">
+                <h2
+                    class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-6 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Chế Độ Xử Lý
+                </h2>
+
+                <!-- Mode Selector -->
+                <div class="grid grid-cols-2 gap-2 mb-6 p-1 bg-white/5 rounded-2xl border border-white/5">
+                    <label class="cursor-pointer group">
+                        <input type="radio" name="mainMode" value="optimize" checked class="hidden peer"
+                            onchange="updateModeUI()">
+                        <div
+                            class="py-2.5 rounded-xl text-center text-[10px] font-black uppercase tracking-widest transition-all peer-checked:bg-indigo-600 peer-checked:text-white text-slate-500 hover:bg-white/5">
+                            📦 Tối Ưu
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group">
+                        <input type="radio" name="mainMode" value="removeBg" class="hidden peer"
+                            onchange="updateModeUI()">
+                        <div
+                            class="py-2.5 rounded-xl text-center text-[10px] font-black uppercase tracking-widest transition-all peer-checked:bg-emerald-600 peer-checked:text-white text-slate-500 hover:bg-white/5">
+                            ✨ Xóa Nền
+                        </div>
+                    </label>
+                </div>
+
+                <div id="settings-group-optimize" class="space-y-4">
+                    <h2
+                        class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-4 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Cài Đặt Nén
+                    </h2>
+
+                    <!-- Cơ Bản (always open) -->
+                    <div class="space-y-4 mb-4">
+                        <div class="field-group">
+                            <div class="flex justify-between">
+                                <label class="field-label">Chất Lượng</label>
+                                <span class="text-[10px] font-black text-sky-400"><span
+                                        id="qualityValue">100</span>%</span>
+                            </div>
+                            <input type="range" name="quality" id="quality" min="1" max="100" value="100"
+                                class="pro-range"
+                                oninput="qualityValue.textContent=this.value;this.style.setProperty('--range-pct',this.value+'%')"
+                                style="--range-pct:100%">
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label accent">Định Dạng Đầu Ra</label>
+                            <select name="format" id="format" class="pro-select">
+                                <option value="">— Giữ Nguyên —</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="png">PNG</option>
+                                <option value="webp" selected>WebP · Khuyên dùng</option>
+                                <option value="avif">AVIF · Nén Siêu Cấp</option>
+                                <option value="gif">GIF</option>
+                                <option value="tiff">TIFF</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Kích Thước -->
+                    <details class="accordion mb-2">
+                        <summary class="accordion-header">📐 Kích Thước & Khung</summary>
+                        <div class="accordion-body space-y-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="field-group">
+                                    <label class="field-label accent">Rộng Tối Đa (px)</label>
+                                    <input type="number" name="maxWidth" id="maxWidth" placeholder="Auto"
+                                        class="pro-input">
+                                </div>
+                                <div class="field-group">
+                                    <label class="field-label accent">Cao Tối Đa (px)</label>
+                                    <input type="number" name="maxHeight" id="maxHeight" placeholder="Auto"
+                                        class="pro-input">
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label class="field-label accent">Kiểu Resize</label>
+                                <select name="resizeFit" id="resizeFit" class="pro-select">
+                                    <option value="inside" selected>Inside · Giữ tỉ lệ</option>
+                                    <option value="cover">Cover · Cắt khung</option>
+                                    <option value="contain">Contain · Thêm viền</option>
+                                    <option value="fill">Fill · Kéo giãn</option>
+                                    <option value="outside">Outside · Mở rộng</option>
+                                </select>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Biến Đổi -->
+                    <details class="accordion mb-2">
+                        <summary class="accordion-header">🔄 Biến Đổi</summary>
+                        <div class="accordion-body space-y-4">
+                            <div class="field-group">
+                                <label class="field-label accent">Xoay (độ)</label>
+                                <select name="rotate" id="rotate" class="pro-select">
+                                    <option value="0" selected>— Không xoay —</option>
+                                    <option value="90">90° CW</option>
+                                    <option value="180">180°</option>
+                                    <option value="270">270° CW</option>
+                                </select>
+                            </div>
+                            <div class="flex gap-4">
+                                <label class="toggle-label flex-1">
+                                    <input type="checkbox" name="flipH" id="flipH" value="true" class="toggle-checkbox">
+                                    <span class="toggle-pill"></span>
+                                    <span class="text-xs text-slate-400">Lật Ngang</span>
+                                </label>
+                                <label class="toggle-label flex-1">
+                                    <input type="checkbox" name="flipV" id="flipV" value="true" class="toggle-checkbox">
+                                    <span class="toggle-pill"></span>
+                                    <span class="text-xs text-slate-400">Lật Dọc</span>
+                                </label>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Màu Sắc -->
+                    <details class="accordion mb-2">
+                        <summary class="accordion-header">🎨 Màu Sắc</summary>
+                        <div class="accordion-body space-y-4">
+                            <div class="field-group">
+                                <div class="flex justify-between">
+                                    <label class="field-label">Sáng</label>
+                                    <span class="text-[10px] font-black text-sky-400"><span
+                                            id="brightnessValue">0</span>%</span>
+                                </div>
+                                <input type="range" name="brightness" id="brightness" min="-100" max="100" value="0"
+                                    class="pro-range"
+                                    oninput="brightnessValue.textContent=this.value;this.style.setProperty('--range-pct',((+this.value+100)/2)+'%')"
+                                    style="--range-pct:50%">
+                            </div>
+                            <div class="field-group">
+                                <div class="flex justify-between">
+                                    <label class="field-label">Bão Hoà</label>
+                                    <span class="text-[10px] font-black text-sky-400"><span
+                                            id="saturationValue">0</span>%</span>
+                                </div>
+                                <input type="range" name="saturation" id="saturation" min="-100" max="100" value="0"
+                                    class="pro-range"
+                                    oninput="saturationValue.textContent=this.value;this.style.setProperty('--range-pct',((+this.value+100)/2)+'%')"
+                                    style="--range-pct:50%">
+                            </div>
+                            <div class="field-group">
+                                <div class="flex justify-between">
+                                    <label class="field-label">Sắc Tố (Hue)</label>
+                                    <span class="text-[10px] font-black text-sky-400"><span
+                                            id="hueValue">0</span>°</span>
+                                </div>
+                                <input type="range" name="hue" id="hue" min="-180" max="180" value="0" class="pro-range"
+                                    oninput="hueValue.textContent=this.value;this.style.setProperty('--range-pct',((+this.value+180)/360*100)+'%')"
+                                    style="--range-pct:50%">
+                            </div>
+                            <label class="toggle-label">
+                                <input type="checkbox" name="grayscale" id="grayscale" value="true"
+                                    class="toggle-checkbox">
+                                <span class="toggle-pill"></span>
+                                <span class="text-xs text-slate-400">Đen Trắng (Grayscale)</span>
+                            </label>
+                        </div>
+                    </details>
+
+                    <!-- Hiệu Ứng -->
+                    <details class="accordion mb-2">
+                        <summary class="accordion-header">✨ Hiệu Ứng & Nâng Cao</summary>
+                        <div class="accordion-body space-y-4">
+                            <div class="field-group">
+                                <div class="flex justify-between">
+                                    <label class="field-label">Blur</label>
+                                    <span class="text-[10px] font-black text-sky-400"><span
+                                            id="blurValue">0</span></span>
+                                </div>
+                                <input type="range" name="blur" id="blur" min="0" max="20" value="0" step="0.5"
+                                    class="pro-range"
+                                    oninput="blurValue.textContent=this.value;this.style.setProperty('--range-pct',(this.value/20*100)+'%')"
+                                    style="--range-pct:0%">
+                            </div>
+                            <div class="flex gap-4">
+                                <label class="toggle-label flex-1">
+                                    <input type="checkbox" name="sharpen" id="sharpen" value="true"
+                                        class="toggle-checkbox">
+                                    <span class="toggle-pill"></span>
+                                    <span class="text-xs text-slate-400">Làm Nét</span>
+                                </label>
+                                <label class="toggle-label flex-1">
+                                    <input type="checkbox" name="stripExif" id="stripExif" value="true"
+                                        class="toggle-checkbox">
+                                    <span class="toggle-pill"></span>
+                                    <span class="text-xs text-slate-400">Xóa EXIF</span>
+                                </label>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Cài đặt sẵn (Presets) -->
+                    <div class="pt-4 border-t border-white/5 space-y-4">
+                        <h3 class="text-[9px] font-black uppercase tracking-widest text-slate-600">Cài đặt sẵn (Presets)
+                        </h3>
+                        <div class="flex gap-2">
+                            <input type="text" id="presetName" placeholder="Tên preset..." class="pro-input flex-1">
+                            <button type="button" onclick="savePreset()"
+                                class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/10 hover:bg-indigo-500/20 transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="presetList"
+                            class="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+                            <!-- Presets will be rendered here -->
+                        </div>
+                    </div>
+                </div> <!-- End of settings-group-optimize -->
+
+                <div id="settings-group-removebg" class="hidden space-y-4">
+                    <div
+                        class="px-4 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                            </svg>
+                        </div>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400">Chế độ Xóa Nền
+                            AI</span>
+                    </div>
+                </div>
+
+                <!-- Process Button -->
+                <button type="submit" id="processBtn"
+                    class="pro-btn w-full text-white font-black py-4 rounded-xl text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all">
+                    <span id="btnText">Bắt Đầu Xử Lý</span>
+                    <div id="loadingScanner" class="hidden">
+                        <svg class="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                    </div>
                 </button>
+
+                <!-- Progress Bar -->
+                <div id="progressContainer" class="hidden mt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[9px] font-black uppercase tracking-widest text-slate-500">Tiến Trình</span>
+                        <span id="progressCount" class="text-[10px] font-black text-indigo-400">0/0</span>
+                    </div>
+                    <div class="h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div id="progressBar"
+                            class="h-full bg-gradient-to-r from-indigo-500 to-sky-400 rounded-full transition-all duration-500"
+                            style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Info -->
+            <div id="resultInfo" class="hidden glass rounded-3xl p-6 border-emerald-500/20 bg-emerald-500/5">
+                <span class="text-[9px] font-black uppercase tracking-widest text-emerald-400">Hoàn Tất</span>
+                <p class="text-[10px] text-emerald-300/80 my-3 italic">Đã xử lý xong. Tải xuống kết quả ngay.</p>
+                <div class="flex flex-col gap-2">
+                    <a id="finalDownloadBtn" href="#"
+                        class="py-3 rounded-xl text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 transition-all">
+                        ⬇ Tải Xuống ZIP
+                    </a>
+                    <button type="button" id="resetBtn"
+                        class="py-3 rounded-xl text-slate-400 hover:text-white font-black text-[10px] uppercase tracking-widest border border-white/5 hover:border-white/10 glass transition-all">
+                        Làm Mới
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Card -->
+            <div id="statsCard" class="hidden glass rounded-3xl p-6">
+                <h3 class="text-[9px] font-black uppercase tracking-widest text-indigo-400 mb-4">📊 Thống Kê</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="text-center p-3 rounded-xl bg-white/3">
+                        <p class="text-[9px] text-slate-600 uppercase tracking-widest mb-1">Files</p>
+                        <p id="statsFiles" class="text-xl font-black text-white">0</p>
+                    </div>
+                    <div class="text-center p-3 rounded-xl bg-emerald-500/10">
+                        <p class="text-[9px] text-slate-600 uppercase tracking-widest mb-1">Tiết Kiệm</p>
+                        <p id="statsSavings" class="text-xl font-black text-emerald-400">0%</p>
+                    </div>
+                    <div class="text-center p-3 rounded-xl bg-white/3">
+                        <p class="text-[9px] text-slate-600 uppercase tracking-widest mb-1">Trước</p>
+                        <p id="statsOriginal" class="text-sm font-black text-white/60">0 KB</p>
+                    </div>
+                    <div class="text-center p-3 rounded-xl bg-white/3">
+                        <p class="text-[9px] text-slate-600 uppercase tracking-widest mb-1">Sau</p>
+                        <p id="statsOptimized" class="text-sm font-black text-indigo-400">0 KB</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Stats Card -->
-        <div id="statsCard" class="hidden glass rounded-3xl p-6">
-            <h3 class="text-[9px] font-black uppercase tracking-widest text-indigo-400 mb-4">📊 Thống Kê</h3>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="text-center p-3 rounded-xl bg-white/3">
-                    <p class="text-[9px] text-slate-600 uppercase tracking-widest mb-1">Files</p>
-                    <p id="statsFiles" class="text-xl font-black text-white">0</p>
-                </div>
-                <div class="text-center p-3 rounded-xl bg-emerald-500/10">
-                    <p class="text-[9px] text-slate-600 uppercase tracking-widest mb-1">Tiết Kiệm</p>
-                    <p id="statsSavings" class="text-xl font-black text-emerald-400">0%</p>
-                </div>
-                <div class="text-center p-3 rounded-xl bg-white/3">
-                    <p class="text-[9px] text-slate-600 uppercase tracking-widest mb-1">Trước</p>
-                    <p id="statsOriginal" class="text-sm font-black text-white/60">0 KB</p>
-                </div>
-                <div class="text-center p-3 rounded-xl bg-white/3">
-                    <p class="text-[9px] text-slate-600 uppercase tracking-widest mb-1">Sau</p>
-                    <p id="statsOptimized" class="text-sm font-black text-indigo-400">0 KB</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Working Area -->
-    <div class="lg:col-span-3 space-y-6">
-        <div id="dropZone" class="drop-zone rounded-[40px] p-12 text-center cursor-pointer relative overflow-hidden group">
-            <input type="file" name="files" id="fileInput" multiple accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
-            <div class="space-y-4 relative z-0">
-                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-500/5 text-indigo-400 border border-indigo-500/10 group-hover:scale-105 transition-transform duration-500">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round"></path></svg>
-                </div>
-                <div>
-                    <p class="text-xl font-bold text-white/90">Nhấp · Kéo thả · Paste (Ctrl+V)</p>
-                    <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Hỗ trợ JPG PNG WebP AVIF GIF TIFF · 50 file · 50MB/file</p>
+        <!-- Working Area -->
+        <div class="lg:col-span-3 space-y-6">
+            <div id="dropZone"
+                class="drop-zone rounded-[40px] p-12 text-center cursor-pointer relative overflow-hidden group">
+                <input type="file" name="files" id="fileInput" multiple accept="image/*"
+                    class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                <div class="space-y-4 relative z-0">
+                    <div
+                        class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-500/5 text-indigo-400 border border-indigo-500/10 group-hover:scale-105 transition-transform duration-500">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-white/90">Nhấp · Kéo thả · Paste (Ctrl+V)</p>
+                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Hỗ trợ JPG PNG
+                            WebP AVIF GIF TIFF · 50 file · 50MB/file</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div id="previewContainer" class="hidden space-y-4">
-            <div class="flex justify-between items-center px-2">
-                <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
-                    Hàng Đợi (<span id="fileCount">0</span>)
-                </h3>
-                <button type="button" id="clearAll" class="text-[9px] font-bold text-slate-600 hover:text-rose-500 transition-colors uppercase tracking-widest">Xóa Tất Cả</button>
+            <div id="previewContainer" class="hidden space-y-4">
+                <div class="flex justify-between items-center px-2">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
+                        Hàng Đợi (<span id="fileCount">0</span>)
+                    </h3>
+                    <button type="button" id="clearAll"
+                        class="text-[9px] font-bold text-slate-600 hover:text-rose-500 transition-colors uppercase tracking-widest">Xóa
+                        Tất Cả</button>
+                </div>
+                <div id="fileList" class="space-y-3 custom-scrollbar max-h-[720px] overflow-y-auto pr-2"></div>
             </div>
-            <div id="fileList" class="space-y-3 custom-scrollbar max-h-[720px] overflow-y-auto pr-2"></div>
         </div>
-    </div>
-</form>
+    </form>
 
-<footer class="mt-24 py-10 text-slate-700 text-[9px] font-black uppercase tracking-[0.3em] border-t border-slate-800/50 w-full max-w-6xl text-center">
-    <!-- Toast Notification Container -->
-    <div id="toast-container"></div>
+    <footer
+        class="mt-24 py-10 text-slate-700 text-[9px] font-black uppercase tracking-[0.3em] border-t border-slate-800/50 w-full max-w-6xl text-center">
+        <!-- Toast Notification Container -->
+        <div id="toast-container"></div>
 
-    <script src="/js/image-tool.js"></script>
+        <script src="/js/image-tool.js"></script>
 </body>
+
 </html>
