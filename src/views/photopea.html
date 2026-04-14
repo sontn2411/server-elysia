@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +8,37 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script defer src='https://analytics.deplio.app/script.js' data-website-id='f427a9d0-6a4e-4cd9-82c2-b9aba05f404c'
+        data-performance='true' data-do-not-track='true' data-domains='server-elysia.onrender.com'></script>
     <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #020617; overflow: hidden; margin: 0; padding: 0; height: 100vh; width: 100vw; display: flex; flex-direction: column; }
-        #pp-container { flex: 1; position: relative; width: 100%; height: 100%; border: none; }
-        iframe { width: 100%; height: 100%; border: none; }
-        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #020617;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #pp-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
         /* Floating Controls */
         .btn-floating {
             position: fixed;
@@ -30,6 +56,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
         }
+
         .btn-floating:hover {
             background: #6366f1;
             color: white;
@@ -37,8 +64,16 @@
             transform: scale(1.1);
             box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
         }
-        .btn-floating.back { top: 12px; left: 12px; }
-        .btn-floating.save { top: 12px; right: 12px; }
+
+        .btn-floating.back {
+            top: 12px;
+            left: 12px;
+        }
+
+        .btn-floating.save {
+            top: 12px;
+            right: 12px;
+        }
 
         /* Landing Screen */
         #landing-screen {
@@ -46,29 +81,53 @@
             inset: 0;
             z-index: 100;
             background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent),
-                        radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent),
-                        #020617;
+                radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent),
+                #020617;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
+
         .drop-zone {
-            width: 100%; max-width: 600px; height: 340px;
+            width: 100%;
+            max-width: 600px;
+            height: 340px;
             border: 2px dashed rgba(255, 255, 255, 0.1);
-            border-radius: 40px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            background: rgba(255, 255, 255, 0.02); transition: all 0.5s ease;
+            border-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.5s ease;
             cursor: pointer;
         }
-        .drop-zone:hover { border-color: #6366f1; background: rgba(99, 102, 241, 0.05); }
+
+        .drop-zone:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
 
         .loading-spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1); border-top: 3px solid #6366f1;
-            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
         /* Toast Notification Styles */
         #toast-container {
@@ -81,6 +140,7 @@
             gap: 0.75rem;
             pointer-events: none;
         }
+
         .toast {
             pointer-events: auto;
             min-width: 300px;
@@ -97,45 +157,110 @@
             animation: toast-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             transition: all 0.3s ease;
         }
-        .toast.hiding { animation: toast-slide-out 0.3s ease forwards; }
-        .toast-icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
-        .toast-msg { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.025em; line-height: 1.4; }
-        
-        .toast-success { border-left: 4px solid #10b981; }
-        .toast-success .toast-icon { color: #10b981; }
-        .toast-error { border-left: 4px solid #ef4444; }
-        .toast-error .toast-icon { color: #ef4444; }
-        .toast-warning { border-left: 4px solid #f59e0b; }
-        .toast-warning .toast-icon { color: #f59e0b; }
-        .toast-info { border-left: 4px solid #3b82f6; }
-        .toast-info .toast-icon { color: #3b82f6; }
+
+        .toast.hiding {
+            animation: toast-slide-out 0.3s ease forwards;
+        }
+
+        .toast-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .toast-msg {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            line-height: 1.4;
+        }
+
+        .toast-success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast-success .toast-icon {
+            color: #10b981;
+        }
+
+        .toast-error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .toast-error .toast-icon {
+            color: #ef4444;
+        }
+
+        .toast-warning {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .toast-warning .toast-icon {
+            color: #f59e0b;
+        }
+
+        .toast-info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast-info .toast-icon {
+            color: #3b82f6;
+        }
 
         @keyframes toast-slide-in {
-            from { transform: translateX(110%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(110%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
+
         @keyframes toast-slide-out {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(110%); opacity: 0; }
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(110%);
+                opacity: 0;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Floating Controls (Always Visible) -->
     <div class="fixed bottom-8 right-8 z-[200] flex flex-col gap-3">
         <!-- Photo Editor Button (Active) -->
-        <a href="/photopea" title="Photo Editor" 
-           class="w-14 h-14 rounded-2xl bg-indigo-500 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl shadow-indigo-500/20 group relative border border-white/10">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-            <span class="absolute right-full mr-4 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Editor (Active)</span>
+        <a href="/photopea" title="Photo Editor"
+            class="w-14 h-14 rounded-2xl bg-indigo-500 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl shadow-indigo-500/20 group relative border border-white/10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <span
+                class="absolute right-full mr-4 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Editor
+                (Active)</span>
         </a>
-        
+
         <!-- Image Optimizer Button -->
-        <a href="/image-tool" title="Image Optimizer" 
-           class="w-14 h-14 rounded-2xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-white/5 flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl glass group relative">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-            <span class="absolute right-full mr-4 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Quay lại Optimizer</span>
+        <a href="/image-tool" title="Image Optimizer"
+            class="w-14 h-14 rounded-2xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-white/5 flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-xl glass group relative">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <span
+                class="absolute right-full mr-4 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Quay
+                lại Optimizer</span>
         </a>
     </div>
 
@@ -143,28 +268,38 @@
     <main id="pp-container">
         <div id="landing-screen">
             <div class="text-center mb-10">
-                <h2 class="text-4xl font-black text-white mb-2 uppercase tracking-tighter">PHOTO EDITOR <span class="text-indigo-400">PRO</span></h2>
-                <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">Standalone Professional Workspace</p>
+                <h2 class="text-4xl font-black text-white mb-2 uppercase tracking-tighter">PHOTO EDITOR <span
+                        class="text-indigo-400">PRO</span></h2>
+                <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">Standalone Professional
+                    Workspace</p>
             </div>
 
             <div id="drop-zone" class="drop-zone group" onclick="document.getElementById('file-input').click()">
                 <input type="file" id="file-input" class="hidden" accept="image/*">
-                <div class="w-16 h-16 rounded-3xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-6 border border-indigo-500/20 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2.5" stroke-linecap="round"></path></svg>
+                <div
+                    class="w-16 h-16 rounded-3xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-6 border border-indigo-500/20 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 4v16m8-8H4" stroke-width="2.5" stroke-linecap="round"></path>
+                    </svg>
                 </div>
                 <p class="text-white text-lg font-bold">Kéo thả ảnh hoặc nhấp để mở</p>
                 <div class="mt-4 flex gap-4">
-                    <button type="button" onclick="startBlank()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-widest border border-white/10 transition-all">Sửa từ đầu (Trống)</button>
+                    <button type="button" onclick="startBlank()"
+                        class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-widest border border-white/10 transition-all">Sửa
+                        từ đầu (Trống)</button>
                 </div>
-                <p class="text-slate-600 text-[10px] font-black uppercase tracking-widest mt-6 italic opacity-50">Hỗ trợ PSD · JPG · PNG · WEBP · SVG</p>
+                <p class="text-slate-600 text-[10px] font-black uppercase tracking-widest mt-6 italic opacity-50">Hỗ trợ
+                    PSD · JPG · PNG · WEBP · SVG</p>
             </div>
 
-            <div id="pp-loading" class="hidden absolute inset-0 z-[110] bg-slate-950 flex flex-col items-center justify-center gap-4">
+            <div id="pp-loading"
+                class="hidden absolute inset-0 z-[110] bg-slate-950 flex flex-col items-center justify-center gap-4">
                 <div class="loading-spinner"></div>
-                <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Đang nạp môi trường làm việc...</p>
+                <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Đang nạp môi
+                    trường làm việc...</p>
             </div>
         </div>
-        
+
         <iframe id="photopea-iframe" allow="clipboard-read; clipboard-write" class="invisible"></iframe>
     </main>
 
@@ -173,4 +308,5 @@
 
     <script src="/js/photopea-handler.js"></script>
 </body>
+
 </html>
